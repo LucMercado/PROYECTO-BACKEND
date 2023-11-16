@@ -44,6 +44,8 @@ export default class ProductManager {
         }
 
         console.log("Producto agregado")
+
+        return product
         
     }
         
