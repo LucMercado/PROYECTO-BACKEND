@@ -3,13 +3,13 @@
 
     <h2>PRODUCTOS</h2>
     <ul id="product-list">
-    {{#each products}}
-            <li>
-                <h3>{{this.title}}</h3>
-                <p>Precio: {{this.price}}</p>
-                <p>Descripción: {{this.description}}</p>
-                <p>Categoría: {{this.category}}</p>
-            </li>
+        {{#each products}}
+        <li id={{this.id}}>
+            <h3>{{this.title}}</h3>
+            <p>Precio: {{this.price}}</p>
+            <p>Descripción: {{this.description}}</p>
+            <p>Categoría: {{this.category}}</p>
+        </li>
         {{/each}}
     </ul>
 
@@ -17,4 +17,5 @@
 
 
 <script src="/socket.io/socket.io.js"></script>
+
 <script src="/static/js/realtimeproducts.js"></script>

@@ -52,9 +52,15 @@ router.put("/:pid", async (req, res) => {
 });
 
 router.delete("/:pid", async (req, res) => {
-    const pid = Number.parseInt(req.params.pid);
+    const productId = Number.parseInt(req.params.pid);
 
-    await productManager.deleteProduct(pid);
+    await productManager.deleteProduct(productId);
+
+    //Emito el evento producto eliminado a traves de socket.io para actualizar lista en tiempo real
+    if (req.app.get("socketio")) {
+        req.app.get("socketio").emit('deleteProduct', productId);
+        console.log("Emitido")
+    }
 
     res.status(200).send("Producto eliminado");
 });

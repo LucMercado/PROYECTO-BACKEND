@@ -17,19 +17,21 @@ const httpServer = app.listen(PORT, () => {
 //Creo servidor websockets con socket.io
 const io = new Server(httpServer);
 
-// Guardo la instancia de Socket.IO en la aplicación de Express
-app.set('socketio', io)
+
 
 // Manejar la conexión de los clientes mediante Socket.io
 io.on("connection", (socket) => {
     console.log("Nuevo cliente conectado");
-
+    
 });
 
 // Configuración para uso de motor de plantillas Handlebars
 app.engine("handlebars", handlebars.engine());
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "handlebars");
+
+// Guardo la instancia de Socket.IO en la aplicación de Express
+app.set('socketio', io)
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -41,7 +43,7 @@ app.use("/api/carts", cartsRouter);
 //Endpoints views
 app.use("/api/", viewsRouter);
 // Servicio de contenidos estáticos
-app.use("/public", express.static(`${__dirname}/public`));
+app.use("/static", express.static(`${__dirname}/public`));
 
 app.get("/", (req, res) => {
     res.status(200).send("Servidor OK");
