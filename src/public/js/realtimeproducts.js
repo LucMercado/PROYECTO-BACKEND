@@ -5,7 +5,7 @@ const socketClient = io();
 socketClient.on("newProduct", (product) => {
     const productList = document.getElementById("product-list");
     const newElement = document.createElement("li");
-    newElement.setAttribute("id", `${product.id}`);
+    newElement.setAttribute("id", `${product._id}`);
     newElement.innerHTML = `
     <h3>${product.title}</h3>
     <p>Precio: ${product.price}</p>

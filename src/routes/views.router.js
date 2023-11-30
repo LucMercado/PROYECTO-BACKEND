@@ -1,18 +1,19 @@
 import { Router } from "express";
-import ProductManager from '../ProductManager.js'
+import ProductManager from '../dao/ProductControllerMDB.js';
 
 const router = Router();
 
-const productManager = new ProductManager('./products.json')
+const productManager = new ProductManager();
 
-const products = await productManager.getProducts()
 
-router.get("/", (req, res) => {
-    res.render("home", { products })
+router.get("/", async (req, res) => {
+    const result = await productManager.getProducts();
+    res.render("home", { products: result.data });
 });
 
-router.get("/realtimeproducts", (req, res) => {
-    res.render("realtimeproducts", { products });
+router.get("/realtimeproducts", async (req, res) => {
+    const result = await productManager.getProducts();
+    res.render("realtimeproducts", { products: result.data });
 });
 
 export default router;

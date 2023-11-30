@@ -80,7 +80,7 @@ export default class ProductManager {
         if (indexProductToUpdate !== -1) {
             productsParse[indexProductToUpdate] = {...productToUpdate, ...field, id}
             const productsJSON = JSON.stringify(productsParse)
-            fs.writeFileSync(this.path, productsJSON)
+            await fs.promises.writeFile(this.path, productsJSON)
         } else {
             console.error("No se encontró producto con ese id.")
         }
