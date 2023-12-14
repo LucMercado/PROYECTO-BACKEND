@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
             res.status(200).send({ products: result.data });
         }
     } else {
-        res.status(400).send(result.data)
+        res.status(404).send(result.data)
     }
 
 

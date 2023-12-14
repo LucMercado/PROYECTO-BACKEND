@@ -25,9 +25,22 @@ try {
     //Creo servidor websockets con socket.io
     const io = new Server(httpServer);
 
+    let messages = []
+
     // Manejar la conexión de los clientes mediante Socket.io
     io.on("connection", (socket) => {
         console.log("Nuevo cliente conectado");
+        // Cuando un nuevo cliente se conecta, enviamos (SOLO a ese cliente)
+        // el array actual de mensajes del chat
+        socket.emit('messagesLogs', messages)
+        console.log(`Chat actual enviado a ${socket.id}`)
+
+        // "Escuchamos" por el tópico message
+        socket.on('message', data => {
+            messages.push(data)
+            io.emit('messagesLogs', messages)
+        })
+
     });
 
     // Configuración para uso de motor de plantillas Handlebars
@@ -53,7 +66,7 @@ try {
     app.get("/", (req, res) => {
         res.status(200).send("Servidor OK");
     });
-    
+
 } catch (err) {
     console.error("Error al inicializar el servidor");
 }
