@@ -7,6 +7,10 @@ import handlebars from "express-handlebars";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 
+import MessageController from "./dao/MessageController.js";
+
+const messageManager = new MessageController();
+
 const PORT = 8080;
 const MOONGOSE_URL =
     "mongodb+srv://hymmateriales:hym123@cluster0.glgppls.mongodb.net/ecommerce";
@@ -36,9 +40,11 @@ try {
         console.log(`Chat actual enviado a ${socket.id}`)
 
         // "Escuchamos" por el tópico message
-        socket.on('message', data => {
+        socket.on('message', async data => {
             messages.push(data)
             io.emit('messagesLogs', messages)
+            const result = await messageManager.addMessage(data)
+            console.log(result)
         })
 
     });

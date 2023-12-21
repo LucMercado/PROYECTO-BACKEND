@@ -1,7 +1,3 @@
-import MessageController from "../../dao/MessageController";
-
-const messageManager = new MessageController();
-
 // Creamos un nuevo CLIENTE de socket.io
 const socketClient = io();
 
@@ -28,8 +24,6 @@ const sendMessage = () => {
     if (message.value.trim() !== "") {
         const data = { user: user.value.trim(), message: message.value.trim() }
         socketClient.emit("message", data);
-        const result = messageManager.addMessage(data)
-        console.log(result)
 
         message.value = "";
         user.value = "";
