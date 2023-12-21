@@ -1,0 +1,18 @@
+<div>
+    <h1>HYM MATERIALES</h1>
+
+    <h2>CARRITO</h2>
+    <ul>
+        {{#each products}}
+        <li id=product-{{this.product._id}}>
+            <a href=products/{{this.product._id}}>
+                <h3>{{this.product.title}}</h3>
+                <p>Precio: {{this.product.price}}</p>
+                <p>Descripción: {{this.product.description}}</p>
+                <p>Categoría: {{this.product.category}}</p>
+                <p>Cantidad: {{this.quantity}}</p>
+            </a>
+        </li>
+        {{/each}}
+    </ul>
+</div>

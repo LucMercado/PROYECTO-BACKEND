@@ -1,15 +1,21 @@
 <div>
-    <h1>HOME</h1>
-    
+    <h1>HYM MATERIALES</h1>
+
     <h2>PRODUCTOS</h2>
     <ul>
-    {{#each products}}
-            <li>
+        {{#each products}}
+        <li id=product-{{this._id}}>
+            <a href=products/{{this._id}}>
                 <h3>{{this.title}}</h3>
                 <p>Precio: {{this.price}}</p>
                 <p>Descripción: {{this.description}}</p>
                 <p>Categoría: {{this.category}}</p>
-            </li>
+                <form action=/api/carts/65821dba69b0fba98996a2ea/product/{{this._id}} method="POST">
+                    
+                    <button type="submit">Agregar al carrito</button>
+                </form>
+            </a>
+        </li>
         {{/each}}
     </ul>
 </div>

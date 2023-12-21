@@ -1,11 +1,12 @@
-import moongose from 'mongoose'
+import mongoose from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 //Sentencia para evitar errores de agregación de , .
-moongose.pluralize(null)
+mongoose.pluralize(null)
 
 const collection = 'products'
 
-const schema = new moongose.Schema({
+const schema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String, required: false },
     price: { type: Number, required: true },
@@ -16,7 +17,8 @@ const schema = new moongose.Schema({
     thumbnail: { type: String, required: false }
 })
 
+schema.plugin(mongoosePaginate)
 
 
-export default moongose.model(collection, schema)
+export default mongoose.model(collection, schema)
 

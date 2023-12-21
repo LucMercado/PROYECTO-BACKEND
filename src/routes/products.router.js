@@ -7,20 +7,16 @@ const router = Router();
 const productManager = new ProductManager();
 
 router.get("/", async (req, res) => {
-    const result = await productManager.getProducts();
+    try {
+        let limit = parseInt(req.query.limit) || 10;
+        let page = parseInt(req.query.page) || 1;
+        
+        const result = await productManager.getProducts(page, limit);
 
-    if (result.status === 'OK') {
-        const limit = req.query.limit;
-        if (limit) {
-            const productsLimit = result.data.slice(0, limit);
-            res.status(200).send({ products: productsLimit });
-        } else {
-            res.status(200).send({ products: result.data });
-        }
-    } else {
-        res.status(404).send(result.data)
+        res.status(200).send({ status: "Succes", payload: result });
+    } catch (err) {
+        res.status(500).send({ status: "Error", payload: err.message})
     }
-
 
 
 });
@@ -41,7 +37,7 @@ router.post("/", uploader.single('thumbnail'), async (req, res) => {
     if (!req.file) return res.status(400).send({ status: 'FIL', data: 'No se pudo subir el archivo' });
 
     //Desestructuración del body para validar contenido
-    const { title, description, price, code, stock, status, category} = req.body;
+    const { title, description, price, code, stock, status, category } = req.body;
     if (!title || !description || !price || !code || !stock || !status || !category) {
         return res.status(400).send({ status: 'ERR', data: 'Faltan campos obligatorios' });
     }

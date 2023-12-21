@@ -15,16 +15,16 @@ export default class ProductController {
         }
     }
 
-    async getProducts() {
+    async getProducts(page, limit) { 
 
         try {
             //lean brinda el resultado en formato limpio js nativo
-            const products = await productModel.find().lean()
-            if (products.length === 0) {
-                return { status: "Not Found", data: "No existen productos cargados" } 
-            } else {
-                return { status: "OK", data: products }
-            }
+
+            const result = await productModel.paginate(
+                {},
+                {offset:(page * limit) - limit, limit:limit, lean: true}
+            )
+                return result
         } catch (err) {
             return err.message;
         }
@@ -33,7 +33,7 @@ export default class ProductController {
 
     async getProductById(id) {
         try {
-            const product = await productModel.findById(id);
+            const product = await productModel.findById(id).lean();
             return product === null ? "No se encontró el producto" : product;
         } catch (err) {
             return err.message;

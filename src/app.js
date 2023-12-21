@@ -59,7 +59,7 @@ try {
     //Endpoints carritos
     app.use("/api/carts", cartsRouter);
     //Endpoints views
-    app.use("/api/", viewsRouter);
+    app.use("/", viewsRouter);
     // Servicio de contenidos estáticos
     app.use("/static", express.static(`${__dirname}/public`));
 
