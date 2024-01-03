@@ -1,0 +1,42 @@
+<style>
+    .register-container {
+        max-width: 360px;
+        margin: auto;
+        margin-top: 64px;
+    }
+</style>
+
+
+<div class="register-container">
+    <h1><b>HYM MATERIALES</b></h1>
+    <h2>Registro de usuario</h2>
+
+    <form action="/api/sessions/register" method="post" style="margin-top: 32px;">
+        <div class="input-group" style="width: 300px; margin-bottom: 32px;">
+            <span class="input-group-text" id="group1"><i class="fa-solid fa-user"></i></span>
+            <input type="text" name="first_name" class="form-control" placeholder="Nombre" required="required">
+        </div>
+
+        <div class="input-group" style="width: 300px; margin-bottom: 32px;">
+            <span class="input-group-text" id="group2"><i class="fa-solid fa-user"></i></span>
+            <input type="text" name="last_name" class="form-control" placeholder="Apellido" required="required">
+        </div>
+
+        <div class="input-group" style="width: 300px; margin-bottom: 32px;">
+            <span class="input-group-text" id="group3"><i class="fa-solid fa-user"></i></span>
+            <input type="email" name="email" class="form-control" placeholder="Email" required="required">
+        </div>
+
+        <div class="input-group" style="width: 300px; margin-bottom: 32px;">
+            <span class="input-group-text" id="group4"><i class="fa-solid fa-user"></i></span>
+            <input type="number" name="age" class="form-control" placeholder="Edad" required="required">
+        </div>
+
+        <div class="input-group" style="width: 300px; margin-bottom: 32px;">
+            <span class="input-group-text" id="group5"><i class="fa-solid fa-lock"></i></span>
+            <input type="password" name="pass" class="form-control" placeholder="Contraseña" required="required">
+        </div>
+
+        <button type="submit" class="btn btn-success">Registrar</button>
+    </form>
+</div>
