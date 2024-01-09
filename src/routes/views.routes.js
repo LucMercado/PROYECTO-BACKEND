@@ -1,3 +1,5 @@
+import { authToken } from '../utils.js'
+
 import { Router } from "express";
 import ProductManager from '../dao/ProductControllerMDB.js';
 import CartManager from '../dao/CartControllerMDB.js';
@@ -106,6 +108,11 @@ router.get('/profile', async (req, res) => {
 
 router.get('/register', async (req, res) => {
     res.render('register', {})
+})
+
+router.get('/profilejwt', authToken, async (req, res) => {
+    const userInDB = await userController.getUserByEmail(req.user.username);
+    res.render('profile', { user: userInDB })
 })
 
 

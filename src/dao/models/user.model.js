@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 mongoose.pluralize(null)
 
@@ -11,5 +12,7 @@ const schema = new mongoose.Schema({
     age: { type: Number, required: true },
     password: { type: String, required: true }
 });
+
+schema.plugin(mongoosePaginate)
 
 export default mongoose.model(collection, schema)

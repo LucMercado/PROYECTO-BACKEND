@@ -2,7 +2,7 @@ import { Router } from 'express';
 import passport from 'passport';
 
 import userModel from '../dao/models/user.model.js';
-import { createHash, isValidPassword } from '../utils.js';
+import { createHash, isValidPassword, generateToken } from '../utils.js';
 import initPassport from '../config/passport.config.js';
 
 // Inicializamos instancia de estrategia/s
@@ -75,6 +75,16 @@ router.get('/failrestore', async (req, res) => {
     res.status(400).send({ status: 'ERR', data: 'El email no existe o faltan datos obligatorios' });
 })
 
+//Autenticación a través de GITHUB
+router.get('/github', passport.authenticate('githubAuth', { scope: ['user:email'] }), async (req, res) => {
+})
+
+router.get('/githubcallback', passport.authenticate('githubAuth', { failureRedirect: '/login' }), async (req, res) => {
+    req.session.user = { username: req.user.email, admin: true }
+    // req.session.user = req.user
+    res.redirect('/profile')
+})
+
 // Nuestro primer endpoint de login!, básico por el momento, con algunas
 // validacione "hardcodeadas", pero nos permite comenzar a entender los conceptos.
 router.post('/login', async (req, res) => {
@@ -86,8 +96,13 @@ router.post('/login', async (req, res) => {
 
         const userInDb = await userModel.findOne({ email: email });
         if (userInDb !== null && isValidPassword(userInDb, pass)) {
-            req.session.user = { username: email, admin: true };
-            res.redirect('/products');
+            //Utilizando sessions
+            // req.session.user = { username: email, admin: true };
+            
+            const access_token = generateToken({ username: email, admin: true }, '1h')
+            //res.status(200).send({ status: 'OK', data: access_token })
+            res.redirect(`/profilejwt?access_token=${access_token}`);
+            
         } else {
             res.status(401).send({ status: 'ERR', data: 'Datos no válidos' });
         }
