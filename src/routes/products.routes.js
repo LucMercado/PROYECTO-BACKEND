@@ -6,7 +6,7 @@ import { uploader } from '../uploader.js'
 const router = Router();
 const productManager = new ProductManager();
 
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         let limit = parseInt(req.query.limit) || 10;
         let page = parseInt(req.query.page) || 1;
@@ -21,19 +21,21 @@ router.get("/", async (req, res) => {
 
 });
 
-router.get("/:pid", async (req, res) => {
+router.get('/:pid', async (req, res) => {
     const productFound = await productManager.getProductById(req.params.pid);
 
     if (productFound) {
         res.status(200).send(productFound);
     } else {
-        res
-            .status(404)
-            .send(`No se ha encontrado ningún producto con el ID: ${req.params.pid}`);
+        res.status(404).send(`No se ha encontrado ningún producto con el ID: ${req.params.pid}`);
     }
 });
 
-router.post("/", uploader.single('thumbnail'), async (req, res) => {
+router.get('*', async (req, res) => {
+    res.status(404).send({ status: 'ERR', data: 'Endpoint no válido' })
+})
+
+router.post('/', uploader.single('thumbnail'), async (req, res) => {
     if (!req.file) return res.status(400).send({ status: 'FIL', data: 'No se pudo subir el archivo' });
 
     //Desestructuración del body para validar contenido
@@ -65,7 +67,7 @@ router.post("/", uploader.single('thumbnail'), async (req, res) => {
     res.status(200).send({ data: result });
 });
 
-router.put("/:pid", async (req, res) => {
+router.put('/:pid', async (req, res) => {
     const newContent = req.body;
     const pid = Number.parseInt(req.params.pid);
 
@@ -74,7 +76,7 @@ router.put("/:pid", async (req, res) => {
     res.status(200).send(result);
 });
 
-router.delete("/:pid", async (req, res) => {
+router.delete('/:pid', async (req, res) => {
     const productId = Number.parseInt(req.params.pid);
 
     await productManager.deleteProduct(productId);
@@ -87,5 +89,14 @@ router.delete("/:pid", async (req, res) => {
 
     res.status(200).send("Producto eliminado");
 });
+
+router.param('pid', async (req, res, next, pid) => {
+    const regex = new RegExp(/^[a-fA-F0-9]{24}$/)
+    if (regex.test(req.params.pid)) {
+        next();
+    } else {
+        res.status(404).send({ status: 'ERR', data: 'Parámetro no válido' })
+    }
+})
 
 export default router;

@@ -11,7 +11,7 @@
     <h1><b>HYM MATERIALES</b></h1>
     <h2>Login de usuario</h2>
 
-    <form action="/api/sessions/login" method="post" style="margin-top: 32px;">
+    <form action="/api/sessions/login_passport_jwt" method="post" style="margin-top: 32px;">
         <div class="input-group" style="width: 300px; margin-bottom: 32px;">
             <span class="input-group-text" id="group1"><i class="fa-solid fa-user"></i></span>
             <input type="text" name="email" class="form-control" placeholder="Email" required="required">
@@ -25,11 +25,17 @@
         <div style="margin-bottom: 32px;">
             <a href="/api/sessions/github">Ingresar con Github</a>
         </div>
+        
+        {{#if msg}}
+        <div style="margin-top: 24px;">
+            <div class="alert alert-danger" role="alert">{{msg}}</div>
+        </div>
+        {{/if}}
 
         <button type="submit" class="btn btn-success" >Ingresar</button>
     </form>
 
-    <form action="/api/sessions/register" method="get" style="margin-top: 15px;">
-        <button type="submit" class="btn btn-primary">Registrarse</button>
-    </form>
+    
+    <a href="/register"><button class="btn btn-primary" style="margin-top: 15px;">Registrarse</button></a>
+    
 </div>

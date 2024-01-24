@@ -16,10 +16,28 @@
 import passport from 'passport'
 import LocalStrategy from 'passport-local'
 import GithubStrategy from 'passport-github2'
+import jwt from 'passport-jwt'
 import userModel from '../dao/models/user.model.js'
 import { createHash, isValidPassword } from '../utils.js'
 
 const initPassport = () => {
+    // Función utilizada por la estrategia loginAuth
+    const verifyLogin = async (req, username, password, done) => {
+        try {
+            const userInDb = await userModel.findOne({ email: username })
+            
+            if (userInDb !== null && isValidPassword(userInDb, password)) {
+                const { _id, password, ...user } = userInDb._doc;
+                if (user) return done(null, user);
+            }
+
+            done(null, false);
+        } catch (err) {
+            return done(`Error passport login: ${err.message}`)
+        }
+    }
+
+
     // Función utilizada por la estrategia registerAuth
     const verifyRegistration = async (req, username, password, done) => {
         try {
@@ -98,6 +116,29 @@ const initPassport = () => {
         }
     }
 
+    const verifyJwt = async (payload, done) => {
+        try {
+            return done (null, payload);
+        } catch (err) {
+            return done(err);
+        }
+    }
+
+    const cookieExtractor = (req) => {
+        let token = null;
+        if (req && req.cookies) token = req.cookies['tokenHYM'];
+        return token;
+    }
+
+    // Creamos estrategia local de autenticación para login
+    passport.use('loginAuth', new LocalStrategy({
+        passReqToCallback: true,
+        usernameField: 'email',
+        passwordField: 'pass'
+    }, verifyLogin))
+
+
+
      // Creamos estrategia para autenticación externa con Github
     passport.use('githubAuth', new GithubStrategy({
         clientID: 'Iv1.59c5fb7fb32cab45',
@@ -118,6 +159,11 @@ const initPassport = () => {
         usernameField: 'email',
         passwordField: 'pass'
     }, verifyRestoration))
+
+    passport.use('jwtAuth', new jwt.Strategy({
+        jwtFromRequest: jwt.ExtractJwt.fromExtractors([cookieExtractor]),
+        secretOrKey: 'HYM_JWT_Key'
+    }, verifyJwt))
         
     // Métodos "helpers" de passport para manejo de datos de sesión
     // Son de uso interno de passport, normalmente no tendremos necesidad de tocarlos.

@@ -91,7 +91,7 @@ router.get('/login', async (req, res) => {
     if (req.session.user) {
         res.redirect('/profile')
     } else {
-        res.render('login', {})
+        res.render('login', { msg: req.query.msg || null })
     }
 })
 
@@ -111,8 +111,7 @@ router.get('/register', async (req, res) => {
 })
 
 router.get('/profilejwt', authToken, async (req, res) => {
-    const userInDB = await userController.getUserByEmail(req.user.username);
-    res.render('profile', { user: userInDB })
+    res.render('profile', { user: req.user })
 })
 
 
