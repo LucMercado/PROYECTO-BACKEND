@@ -3,7 +3,7 @@ import passport from 'passport';
 
 import userModel from '../dao/models/user.model.js';
 import { createHash, isValidPassword, generateToken, passportCall } from '../utils.js';
-import initPassport from '../config/passport.config.js';
+import initPassport from '../auth/passport.config.js';
 
 // Inicializamos instancia de estrategia/s
 initPassport()

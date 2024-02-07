@@ -3,8 +3,10 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
 
+import config from 'config.js'
+
 // Este private key es para cifrar el token
-const PRIVATE_KEY = 'HYM_JWT_Key'
+const PRIVATE_KEY = config.SECRET_KEY
 
 export const __filename = url.fileURLToPath(import.meta.url)
 

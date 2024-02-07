@@ -2,10 +2,11 @@ import express from 'express';
 import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
-import cookieParser from 'cookie-parser'
-import session from 'express-session'
-import MongoStore from 'connect-mongo'
-import passport from 'passport'
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import cors from 'cors';
 
 import productsRouter from './routes/products.routes.js';
 import cartsRouter from './routes/carts.routes.js';
@@ -14,17 +15,20 @@ import sessionsRouter from './routes/session.routes.js';
 import cookiesRouter from './routes/cookies.routes.js';
 import viewsRouter from './routes/views.routes.js';
 import { __dirname } from './utils.js';
+import MongoSingleton from './services/mongo.singleton.js'
+
+import config from './config.js'
 
 import MessageController from './dao/MessageController.js';
 
 const messageManager = new MessageController();
 
-const PORT = 8080;
-const MONGOOSE_URL =
-    "mongodb+srv://hymmateriales:hym123@cluster0.glgppls.mongodb.net/ecommerce";
+const PORT = config.PORT;
+// const MONGOOSE_URL =
+//     "mongodb+srv://hymmateriales:hym123@cluster0.glgppls.mongodb.net/ecommerce";
 
 try {
-    await mongoose.connect(MONGOOSE_URL);
+    MongoSingleton.getInstance();
 
     const app = express();
     // Asignamos a httpServer la instancia de Express para poder luego pasarlo al server de socket.io
@@ -56,6 +60,11 @@ try {
         })
 
     });
+
+    app.use(cors({
+        origin: '*', // http://127.0.0.1:5500
+        methods: 'GET,POST,PUT,PATCH,DELETE'
+    }));
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));

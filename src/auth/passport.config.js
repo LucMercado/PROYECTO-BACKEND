@@ -17,8 +17,11 @@ import passport from 'passport'
 import LocalStrategy from 'passport-local'
 import GithubStrategy from 'passport-github2'
 import jwt from 'passport-jwt'
+
 import userModel from '../dao/models/user.model.js'
 import { createHash, isValidPassword } from '../utils.js'
+
+import config from './config.js'
 
 const initPassport = () => {
     // Función utilizada por la estrategia loginAuth
@@ -141,9 +144,9 @@ const initPassport = () => {
 
      // Creamos estrategia para autenticación externa con Github
     passport.use('githubAuth', new GithubStrategy({
-        clientID: 'Iv1.59c5fb7fb32cab45',
-        clientSecret: '1783e46a8d49aab390cdef2c94f1413a79e4b18d',
-        callbackURL: 'http://localhost:8080/api/sessions/githubcallback'
+        clientID: config.GITHUB_AUTH.clientId,
+        clientSecret: config.GITHUB_AUTH.clientSecret,
+        callbackURL: config.GITHUB_AUTH.callbackUrl
     }, verifyGithub))
     
     // Creamos estrategia local de autenticación para registro
@@ -162,7 +165,7 @@ const initPassport = () => {
 
     passport.use('jwtAuth', new jwt.Strategy({
         jwtFromRequest: jwt.ExtractJwt.fromExtractors([cookieExtractor]),
-        secretOrKey: 'HYM_JWT_Key'
+        secretOrKey: config.SECRET_KEY
     }, verifyJwt))
         
     // Métodos "helpers" de passport para manejo de datos de sesión
