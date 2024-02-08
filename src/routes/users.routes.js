@@ -16,19 +16,19 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         //Desestructuración del body para validar contenido
-        const { first_name, last_name, email, gender, password } = req.body;
-        if (!first_name || !last_name || !email || !gender || !password) {
+        const { first_name, last_name, email, age, password } = req.body;
+        if (!first_name || !last_name || !email || !age || !password) {
             return res.status(400).send({ status: 'ERR', data: 'Faltan campos obligatorios' });
         }
         const newContent = {
             first_name, 
             last_name, 
             email, 
-            gender, 
+            age, 
             password
         };
 
-        res.status(200).send({ status: 'OK', data: await productManager.addProduct(newContent) });
+        res.status(200).send({ status: 'OK', data: await controller.addUser(newContent) });
     } catch (err) {
         res.status(500).send({ status: 'ERR', data: err.message })
     }
