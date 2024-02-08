@@ -21,7 +21,7 @@ import jwt from 'passport-jwt'
 import userModel from '../dao/models/user.model.js'
 import { createHash, isValidPassword } from '../utils.js'
 
-import config from './config.js'
+import config from '../config.js'
 
 const initPassport = () => {
     // Función utilizada por la estrategia loginAuth

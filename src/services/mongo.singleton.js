@@ -6,7 +6,8 @@ export default class MongoSingleton {
     static #instance;
 
     constructor() {
-        mongoose.connect(config.MONGOOSE_URL);
+        const MONGOOSE_URL = config.MONGOOSE_URL
+        mongoose.connect(MONGOOSE_URL);
     }
 
     static getInstance() {

@@ -24,11 +24,11 @@ import MessageController from './dao/MessageController.js';
 const messageManager = new MessageController();
 
 const PORT = config.PORT;
-// const MONGOOSE_URL =
-//     "mongodb+srv://hymmateriales:hym123@cluster0.glgppls.mongodb.net/ecommerce";
+const MONGOOSE_URL = config.MONGOOSE_URL
 
 try {
-    MongoSingleton.getInstance();
+    await MongoSingleton.getInstance();
+    // await mongoose.connect(MONGOOSE_URL)
 
     const app = express();
     // Asignamos a httpServer la instancia de Express para poder luego pasarlo al server de socket.io
@@ -36,6 +36,11 @@ try {
         console.log(
             `Servidor EXPRESS activo en puerto ${PORT}, conectado a base de datos`
         );
+        process.on('uncaughtException', exception => {
+            /* console.error(`ERROR!: ${exception.stack}`); */
+            console.error(exception.name);
+            console.error(exception.message);
+        });
     });
 
     //Creo servidor websockets con socket.io

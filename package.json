@@ -4,7 +4,8 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/app"
+    "dev": "nodemon src/app --mode=dev --port=8080",
+    "start": "node src/app --mode=prod --port=5050"
   },
   "keywords": [],
   "author": "",
