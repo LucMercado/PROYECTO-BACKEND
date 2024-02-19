@@ -1,12 +1,23 @@
 import ticketModel from '../dao/models/ticket.model.js';
+import { v4 as uuid } from uuid
+
+class TicketDTO {
+    constructor(total, email) {
+        this.code = uuid();
+        this.purchase_datetime = Date.now;
+        this.amount = total;
+        this.purchaser = email;
+    }
+}
 
 export default class TicketService {
     constructor() {
     }
 
-    async createTicketService(data) {
+    async createTicketService(total, email) {
         try {
-            return await ticketModel.create(data);
+            const ticket = new TicketDTO(total, email);
+            return await ticketModel.create(ticket);
         } catch (err) {
             return err.message;
         }
