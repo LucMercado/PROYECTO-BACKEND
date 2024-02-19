@@ -1,5 +1,5 @@
 import ticketModel from '../dao/models/ticket.model.js';
-import { v4 as uuid } from uuid
+import { v4 as uuid } from 'uuid'
 
 class TicketDTO {
     constructor(total, email) {
