@@ -1,5 +1,5 @@
 import { Router } from "express";
-import ProductManager from "../dao/ProductControllerMDB.js";
+import ProductManager from "../dao/product.controller.js";
 import { uploader } from '../uploader.js'
 
 
@@ -40,7 +40,7 @@ router.post('/', uploader.single('thumbnail'), async (req, res) => {
 
     //Desestructuración del body para validar contenido
     const { title, description, price, code, stock, status, category } = req.body;
-    if (!title || !description || !price || !code || !stock || !status || !category) {
+    if (!title || !price || !code || !stock || !status || !category) {
         return res.status(400).send({ status: 'ERR', data: 'Faltan campos obligatorios' });
     }
     const newContent = {

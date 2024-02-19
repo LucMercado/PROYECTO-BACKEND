@@ -18,8 +18,6 @@ export default class ProductService {
     async getProductsService(page, limit) { 
 
         try {
-            //lean brinda el resultado en formato limpio js nativo
-
             const result = await productModel.paginate(
                 {},
                 {offset:(page * limit) - limit, limit:limit, lean: true}

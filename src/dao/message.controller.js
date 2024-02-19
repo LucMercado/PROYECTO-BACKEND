@@ -1,4 +1,4 @@
-import MessageService from "../services/message.services";
+import MessageService from "../services/message.services.js";
 
 const messageService = new MessageService;
 

@@ -1,13 +1,27 @@
-import ProductService from "../services/product.services";
+import ProductService from "../services/product.services.js";
 
 const productService = new ProductService;
+
+class ProductDTO {
+    constructor(product) {
+        this.title = product.title;
+        this.description = product.description;
+        this.price = product.price;
+        this.code  = product.code;
+        this.status = product.status;
+        this.stock = product.stock;
+        this.category = product.category;
+        this.thumbnail = product.thubnail;
+    }
+}
 
 export default class ProductController {
     constructor() {
     }
 
     async addProduct(product) {
-        return await productService.addProductService(product);
+        const normalizedProduct = new ProductDTO(product);
+        return await productService.addProduct(normalizedProduct);
     }
 
     async getProducts(page, limit) { 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import CartManager from '../dao/CartControllerMDB.js';
+import CartManager from '../dao/cart.controller.js';
 
 const router = Router();
 const cartManager = new CartManager();
@@ -81,6 +81,16 @@ router.delete('/:cid', async (req, res) => {
         const cartId = req.params.cid;
 
         res.status(200).send({status: "Succes", data: await cartManager.deleteAllProductsToCart(cartId)});
+    } catch (err) {
+        res.status(500).send({status: "Error", data: err.message});
+    }
+})
+
+router.post('/:cid/purchase', async (req, res)=> {
+    try {
+        const cartId = req.params.cid;
+
+        res.status(200).send({status: "Succes", data: await cartManager.processPurchase(cartId)});
     } catch (err) {
         res.status(500).send({status: "Error", data: err.message});
     }

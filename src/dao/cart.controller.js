@@ -1,4 +1,4 @@
-import CartService from "../services/cart.services";
+import CartService from "../services/cart.services.js";
 
 const cartService = new CartService;
 
@@ -34,6 +34,10 @@ export default class CartManager {
 
     async deleteOneProductToCart(cid, pid) {
         return await cartService.deleteOneProductToCartService(cid, pid);
+    }
+
+    async processPurchase(cid, products) {
+        return await cartService.processPurchaseService(cid);
     }
 
 }

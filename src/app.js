@@ -19,7 +19,7 @@ import MongoSingleton from './services/mongo.singleton.js'
 
 import config from './config.js'
 
-import MessageController from './dao/MessageController.js';
+import MessageController from './dao/message.controller.js';
 
 const messageManager = new MessageController();
 

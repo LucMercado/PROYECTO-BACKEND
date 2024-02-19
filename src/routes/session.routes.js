@@ -5,6 +5,16 @@ import userModel from '../dao/models/user.model.js';
 import { createHash, isValidPassword, generateToken, passportCall } from '../utils.js';
 import initPassport from '../auth/passport.config.js';
 
+class UserProfileDTO {
+    constructor(user) {
+    this.email = user.email;
+    this.first_name = user.first_name;
+    this.last_name = user.last_name;
+    this.age = user.age;
+    this.role = user.role;
+    }
+}
+
 // Inicializamos instancia de estrategia/s
 initPassport()
 
@@ -77,14 +87,6 @@ router.get('/logout', async (req, res) => {
     }
 })
 
-router.get('/admin', auth, async (req, res) => {
-    try {
-        res.status(200).send({ status: 'OK', data: 'Estos son los datos privados' });
-    } catch (err) {
-        res.status(500).send({ status: 'ERR', data: err.message });
-    }
-})
-
 // Endpoint de uso interno, solo para generar claves hasheadas de prueba cuando haga falta
 router.get('/hash/:pass', async (req, res) => {
     res.status(200).send({ status: 'OK', data: createHash(req.params.pass) });
@@ -109,7 +111,8 @@ router.get('/githubcallback', passport.authenticate('githubAuth', { failureRedir
 })
 
 router.get('/current', passportCall('jwtAuth', { session: false }), handlePolicies(['user', 'premium', 'admin']), async (req, res) => {
-    res.status(200).send({ status: 'OK', data: req.user })
+    const userDTO = new UserProfileDTO(req.user);
+    res.status(200).send({ status: 'OK', data: userDTO })
 })
 
 router.post('/login_session', async (req, res) => {

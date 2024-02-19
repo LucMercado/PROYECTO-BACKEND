@@ -1,9 +1,9 @@
 import { authToken } from '../utils.js'
 
 import { Router } from "express";
-import ProductManager from '../dao/ProductControllerMDB.js';
-import CartManager from '../dao/CartControllerMDB.js';
-import { UserController } from '../dao/user.controller.mdb.js';
+import ProductManager from '../dao/product.controller.js';
+import CartManager from '../dao/cart.controller.js';
+import { UserController } from '../dao/user.controller.js';
 
 const router = Router();
 

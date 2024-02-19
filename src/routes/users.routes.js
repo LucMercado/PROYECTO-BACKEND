@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { UserController } from '../dao/user.controller.mdb.js';
+import { UserController } from '../dao/user.controller.js';
 
 const router = Router();
 const controller = new UserController();
