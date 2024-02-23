@@ -1,4 +1,4 @@
-import { authToken } from '../utils.js'
+import { authToken, handlePolicies } from '../utils.js'
 
 import { Router } from "express";
 import ProductManager from '../dao/product.controller.js';
@@ -61,14 +61,9 @@ router.get('/chat', async (req, res) => {
 })
 
 // Dejamos esta ruta como PRIVADA, solo los usuarios admin pueden verla
-router.get('/users', async (req, res) => {
-    // Si hay un usuario logueado y es admin
-    if (req.session.user && req.session.user.admin === true) {
+router.get('/users', authToken, handlePolicies(['admin']), async (req, res) => {
+
         const data = await userController.getUsersPaginated(req.query.page || 1, req.query.limit || 50)
-        
-        // Handlebars tiene algunas limitaciones al momento de evaluar expresiones.
-        // Si queremos un listado completo de enlaces de página, armamos directamente un array
-        // para recorrer y tener el número de página en cada caso (ver opción 1 paginado en plantilla)
         data.pages = []
         for (let i = 1; i <= data.totalPages; i++) data.pages.push(i)
 
@@ -76,13 +71,6 @@ router.get('/users', async (req, res) => {
             title: 'Listado de USUARIOS',
             data: data
         })
-    } else if (req.session.user) {
-        // Si hay un usuario logueado pero no es admin
-        res.redirect('/profile')
-    } else {
-        // caso contrario volvemos al login
-        res.redirect('/login')
-    }
 })
 
 router.get('/login', async (req, res) => {
@@ -113,6 +101,15 @@ router.get('/register', async (req, res) => {
 router.get('/profilejwt', authToken, async (req, res) => {
     res.render('profile', { user: req.user })
 })
+
+router.get("/mockingproducts", async (req, res) => {
+    try {
+        const users = userController.generateMockUsers(100);
+        res.status(200).send({ status: "OK", data: users });
+    } catch (err) {
+        res.status(500).send({ status: "ERR", data: err.message });
+    }
+});
 
 
 export default router;

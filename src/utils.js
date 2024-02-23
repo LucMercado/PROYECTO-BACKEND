@@ -3,7 +3,10 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
 
+import CustomError from './services/error.custom.class.js'
+
 import config from './config.js'
+import errorsDictionary from './services/errors.dictionary.js'
 
 // Este private key es para cifrar el token
 const PRIVATE_KEY = config.SECRET_KEY
@@ -24,10 +27,10 @@ export const authToken = (req, res, next) => {
     const queryToken = req.query.access_token ? req.query.access_token: undefined;  
     const receivedToken = headerToken || cookieToken || queryToken
     
-    if (!receivedToken) return res.redirect('/login')
+    if (!receivedToken) return next(new CustomError(errorsDictionary.UNAUTHORIZED_ERROR))
 
     jwt.verify(receivedToken, PRIVATE_KEY, (err, credentials) => {
-        if (err) return res.status(403).send({ status: 'ERR', data: 'No autorizado' })
+        if (err) return next(new CustomError(errorsDictionary.UNAUTHORIZED_ERROR))
         req.user = credentials
         next()
     })
@@ -41,5 +44,19 @@ export const passportCall = (strategy, options) => {
             req.user = user;
             next();
         })(req, res, next);
+    }
+}
+
+export const handlePolicies = policies => {
+    return async (req, res, next) => {
+        if (!req.user) return res.status(401).send({ status: 'ERR', data: 'Usuario no autorizado' })
+
+        // Normalizamos todo a mayúsculas para comparar efectivamente
+        const userRole = req.user.role.toUpperCase();
+        policies.forEach((policy, index) => policies[index] = policies[index].toUpperCase());
+
+        if (policies.includes('PUBLIC')) return next();
+        if (policies.includes(userRole)) return next();
+        return next(new CustomError(errorsDictionary.FORBIDDEN_ERROR));
     }
 }

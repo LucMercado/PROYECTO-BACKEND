@@ -2,7 +2,7 @@ import { Router } from 'express';
 import passport from 'passport';
 
 import userModel from '../dao/models/user.model.js';
-import { createHash, isValidPassword, generateToken, passportCall } from '../utils.js';
+import { createHash, isValidPassword, generateToken, passportCall, handlePolicies } from '../utils.js';
 import initPassport from '../auth/passport.config.js';
 
 class UserProfileDTO {
@@ -33,20 +33,6 @@ const auth = (req, res, next) => {
         }
     } catch (err) {
         res.status(500).send({ status: 'ERR', data: err.message });
-    }
-}
-
-const handlePolicies = policies => {
-    return async (req, res, next) => {
-        if (!req.user) return res.status(401).send({ status: 'ERR', data: 'Usuario no autorizado' })
-
-        // Normalizamos todo a mayúsculas para comparar efectivamente
-        const userRole = req.user.role.toUpperCase();
-        policies.forEach((policy, index) => policies[index] = policies[index].toUpperCase());
-
-        if (policies.includes('PUBLIC')) return next();
-        if (policies.includes(userRole)) return next();
-        res.status(403).send({ status: 'ERR', data: 'Sin permisos suficientes' });
     }
 }
 

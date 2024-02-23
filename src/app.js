@@ -18,6 +18,7 @@ import { __dirname } from './utils.js';
 import MongoSingleton from './services/mongo.singleton.js'
 
 import config from './config.js'
+import errorsDictionary from './services/errors.dictionary.js';
 
 import MessageController from './dao/message.controller.js';
 
@@ -107,9 +108,24 @@ try {
     // Servicio de contenidos estáticos
     app.use('/static', express.static(`${__dirname}/public`));
 
-    app.get("/", (req, res) => {
-        res.status(200).send("Servidor OK");
+    //Middleware captura general de errores
+
+    app.use((err, req, res, next) => {
+        const code = err.code || 500;
+        const message = err.message || 'Hubo un problema, error desconocido';
+        
+        return res.status(code).send({
+            status: 'ERR',
+            data: message,
+            // Habilitar si se quiere más info del error en modo development
+            // stack: config.MODE === 'devel' ? err.stack : {}
+        });
     });
+
+    app.all('*', (req, res, next)=>{
+        res.status(404).send({ status: 'ERR', data: errorsDictionary.PAGE_NOT_FOUND.message });
+    });
+
 
 } catch (err) {
     console.error("Error al inicializar el servidor");

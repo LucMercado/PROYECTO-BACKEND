@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import CartManager from '../dao/cart.controller.js';
+import { passportCall } from '../utils.js';
 
 const router = Router();
 const cartManager = new CartManager();
@@ -86,11 +87,12 @@ router.delete('/:cid', async (req, res) => {
     }
 })
 
-router.post('/:cid/purchase', async (req, res)=> {
+router.post('/:cid/purchase', passportCall('jwtAuth', { session: false }), async (req, res)=> {
     try {
         const cartId = req.params.cid;
+        const email = req.user.email;
 
-        res.status(200).send({status: "Succes", data: await cartManager.processPurchase(cartId)});
+        res.status(200).send({status: "Succes", data: await cartManager.processPurchase(cartId, email)});
     } catch (err) {
         res.status(500).send({status: "Error", data: err.message});
     }

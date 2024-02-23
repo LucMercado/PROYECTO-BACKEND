@@ -1,5 +1,6 @@
 import cartModel from "../dao/models/cart.model.js";
 import productModel from "../dao/models/product.model.js";
+
 import TicketService from "./ticket.services.js";
 
 const ticketManager = new TicketService();
@@ -100,7 +101,7 @@ export default class CartService {
         }
     }
 
-    async processPurchaseService(cid) {
+    async processPurchaseService(cid, email) {
         try {
             const data = await cartModel
                 .findById(cid)

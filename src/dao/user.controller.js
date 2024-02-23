@@ -21,4 +21,8 @@ export class UserController {
     async getUserByEmail(email){
         return await userService.getUserByEmailService(email);
     }
+
+    async generateMockUsers(qty){
+        return await userService.generateMockUsersService(qty);
+    }
 }
