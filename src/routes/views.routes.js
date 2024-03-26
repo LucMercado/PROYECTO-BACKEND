@@ -22,6 +22,7 @@ router.get('/products', async (req, res) => {
 
         res.render('home', {products: result.docs})
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: "Error", payload: err.message})
     }
     
@@ -34,6 +35,7 @@ router.get('/products/:pid', async (req, res) => {
         const product = await productManager.getProductById(productId)
         res.render('product', { product })
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: "Error", payload: err.message})
     }
 })
@@ -42,10 +44,8 @@ router.get('/carts/:cid', async (req, res) => {
     // Vista de los productos de un carrito
     const cartId = req.params.cid;
     const result = await cartManager.getCartById(cartId);
-    console.log(result.products)
 
     res.render('cart', { products: result.products });
-
 })
 
 router.get('/realtimeproducts', async (req, res) => {
@@ -62,7 +62,7 @@ router.get('/chat', async (req, res) => {
 
 // Dejamos esta ruta como PRIVADA, solo los usuarios admin pueden verla
 router.get('/users', authToken, handlePolicies(['admin']), async (req, res) => {
-
+    try {
         const data = await userController.getUsersPaginated(req.query.page || 1, req.query.limit || 50)
         data.pages = []
         for (let i = 1; i <= data.totalPages; i++) data.pages.push(i)
@@ -71,13 +71,20 @@ router.get('/users', authToken, handlePolicies(['admin']), async (req, res) => {
             title: 'Listado de USUARIOS',
             data: data
         })
+    } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
+        res.status(500).send({ status: "Error", payload: err.message})
+    }
+    
 })
 
 router.get('/login', async (req, res) => {
     // Si el usuario tiene sesión activa, no volvemos a mostrar el login,
     // directamente redireccionamos al perfil.
-    if (req.session.user) {
-        res.redirect('/profile')
+    const cookieToken = req.cookies && req.cookies['tokenHYM'] ? req.cookies['tokenHYM']: undefined;
+    
+    if (cookieToken) {
+        res.redirect('/profilejwt')
     } else {
         res.render('login', { msg: req.query.msg || null })
     }
@@ -99,17 +106,35 @@ router.get('/register', async (req, res) => {
 })
 
 router.get('/profilejwt', authToken, async (req, res) => {
-    res.render('profile', { user: req.user })
+    try {
+        res.render('profile', { user: req.user });
+    } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
+        res.status(500).send({ status: "Error", payload: err.message});
+    }
 })
 
-router.get("/mockingproducts", async (req, res) => {
+router.get("/mockingUsers", async (req, res) => {
     try {
         const users = userController.generateMockUsers(100);
         res.status(200).send({ status: "OK", data: users });
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: "ERR", data: err.message });
     }
 });
+
+router.get('/loggerTest', async (req, res) => {
+    req.logger.fatal('Error fatal');
+    req.logger.error('Error');
+    req.logger.warning('Warning');
+    req.logger.info('Info');
+    req.logger.http('Http');
+    req.logger.debug('Debug');
+
+    res.send({status: "OK"});
+    
+})
 
 
 export default router;

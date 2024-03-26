@@ -19,6 +19,7 @@ import MongoSingleton from './services/mongo.singleton.js'
 
 import config from './config.js'
 import errorsDictionary from './services/errors.dictionary.js';
+import addLogger from './services/winston.logger.js';
 
 import MessageController from './dao/message.controller.js';
 
@@ -34,6 +35,7 @@ try {
     const app = express();
     // Asignamos a httpServer la instancia de Express para poder luego pasarlo al server de socket.io
     const httpServer = app.listen(PORT, () => {
+        
         console.log(
             `Servidor EXPRESS activo en puerto ${PORT}, conectado a base de datos`
         );
@@ -93,6 +95,10 @@ try {
     // Guardo la instancia de Socket.IO en la aplicación de Express
     app.set("socketio", io);
 
+    app.use(addLogger);
+
+    //Endpoints views
+    app.use('/', viewsRouter);
     //Endpoints productos
     app.use('/api/products', productsRouter);
     //Endpoints carritos
@@ -103,8 +109,6 @@ try {
     app.use('/api/sessions', sessionsRouter);
     //Endpoints cookies
     app.use('/api/cookies', cookiesRouter);
-    //Endpoints views
-    app.use('/', viewsRouter);
     // Servicio de contenidos estáticos
     app.use('/static', express.static(`${__dirname}/public`));
 
@@ -113,6 +117,8 @@ try {
     app.use((err, req, res, next) => {
         const code = err.code || 500;
         const message = err.message || 'Hubo un problema, error desconocido';
+
+        req.logger.error({status:'ERR', code, data: message});
         
         return res.status(code).send({
             status: 'ERR',
@@ -123,7 +129,9 @@ try {
     });
 
     app.all('*', (req, res, next)=>{
-        res.status(404).send({ status: 'ERR', data: errorsDictionary.PAGE_NOT_FOUND.message });
+        const message = errorsDictionary.PAGE_NOT_FOUND.message
+        req.logger.error({status:'ERR', code:'404', message});
+        res.status(404).send({ status: 'ERR', data: message });
     });
 
 

@@ -26,12 +26,15 @@ const auth = (req, res, next) => {
             if (req.session.user.role === 'admin') {
                 next()
             } else {
+                req.logger.error({status:'ERR', code:'403', message: 'Usuario no admin'});
                 res.status(403).send({ status: 'ERR', data: 'Usuario no admin' });
             }
         } else {
+            req.logger.error({status:'ERR', code:'401', message: 'Usuario no autorizado'});
             res.status(401).send({ status: 'ERR', data: 'Usuario no autorizado' });
         }
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: 'ERR', data: err.message });
     }
 }
@@ -54,12 +57,14 @@ router.get('/logout', async (req, res) => {
     try {
         req.user = {};
         res.clearCookie('tokenHYM');
+        req.logger.info({status:'OK', code:'200', message: 'User logged out'});
 
         // req.session.destroy nos permite destruir la sesión
         // De esta forma, en la próxima solicitud desde ese mismo navegador, se iniciará
         // desde cero, creando una nueva sesión y volviendo a almacenar los datos deseados.
         req.session.destroy((err) => {
             if (err) {
+                req.logger.error({status:'ERR', code:'500', message: err.message});
                 res.status(500).send({ status: 'ERR', data: err.message })
             } else {
                 // El endpoint puede retornar el mensaje de error, o directamente
@@ -69,6 +74,7 @@ router.get('/logout', async (req, res) => {
             }
         })
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: 'ERR', data: err.message })
     }
 })
@@ -79,10 +85,12 @@ router.get('/hash/:pass', async (req, res) => {
 })
 
 router.get('/failregister', async (req, res) => {
+    req.logger.error({status:'ERR', code:'400', message: 'El email ya existe o faltan datos obligatorios' });
     res.status(400).send({ status: 'ERR', data: 'El email ya existe o faltan datos obligatorios' });
 })
 
 router.get('/failrestore', async (req, res) => {
+    req.logger.error({status:'ERR', code:'400', message: 'El email no existe o faltan datos obligatorios' });
     res.status(400).send({ status: 'ERR', data: 'El email no existe o faltan datos obligatorios' });
 })
 
@@ -112,9 +120,11 @@ router.post('/login_session', async (req, res) => {
             req.session.user = userInDbSafe
             res.redirect('/profile')
         } else {
+            req.logger.error({status:'ERR', code:'401', message: 'Datos no válidos'});
             res.status(401).send({ status: 'ERR', data: 'Datos no válidos' })
         }
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: 'ERR', data: err.message })
     }
 })
@@ -132,9 +142,11 @@ router.post('/login_manual_jwt', async (req, res) => {
             // res.status(200).send({ status: 'OK', data: { access: 'authorized', token: access_token } })
             setTimeout(() => res.redirect('/profilejwt'), 200);
         } else {
+            req.logger.error({status:'ERR', code:'401', message: 'Datos no válidos'});
             res.status(401).send({ status: 'ERR', data: 'Datos no válidos' })
         }
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: 'ERR', data: err.message })
     }
 })
@@ -149,6 +161,7 @@ router.post('/register', passport.authenticate('registerAuth', { failureRedirect
     try {
         res.status(200).redirect('/login');
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: 'ERR', data: err.message });
     }
 })
@@ -157,6 +170,7 @@ router.post('/restore', passport.authenticate('restoreAuth', { failureRedirect: 
     try {
         res.status(200).send({ status: 'OK', data: 'Clave actualizada' });
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: 'ERR', data: err.message });
     }
 })

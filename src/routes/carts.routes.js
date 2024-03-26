@@ -10,6 +10,7 @@ router.get('/', async (req, res) => {
         const result = await cartManager.getCarts();
         res.status(200).send({ status: 'Succes', data: result });
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: 'Error', data: err.message });
     }
 })
@@ -21,7 +22,9 @@ router.get('/:cid', async (req, res) => {
     if (result) {
         res.status(200).send({ status: "Succes", data: result });
     } else {
-        res.status(404).send(`No se ha encontrado ningún carrito con el ID: ${req.params.cid}`);
+        const message = `No se ha encontrado ningún carrito con el ID: ${req.params.cid}`
+        req.logger.error({status:'ERR', code:'404', message});
+        res.status(404).send(message);
     }
 
 })
@@ -39,6 +42,7 @@ router.post('/:cid/product/:pid', async (req, res) => {
 
         res.status(200).send({status: "Succes", data: await cartManager.addProductToCart(cartId, productId, 1)});
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});
     }
 })
@@ -51,6 +55,7 @@ router.put('/:cid/product/:pid', async (req, res) => {
 
         res.status(200).send({status: "Succes", data: await cartManager.addProductToCart(cartId, productId, parseInt(quantity))});
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});
     }
 })
@@ -62,6 +67,7 @@ router.put('/:cid', async (req, res) => {
 
         res.status(200).send({status: "Succes", data: await cartManager.updateAllProducts(cartId, updatedProducts)});
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});
     }
 })
@@ -73,6 +79,7 @@ router.delete('/:cid/product/:pid', async (req, res) => {
 
         res.status(200).send({status: "Succes", data: await cartManager.deleteOneProductToCart(cartId, productId)});
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});
     }
 })
@@ -83,6 +90,7 @@ router.delete('/:cid', async (req, res) => {
 
         res.status(200).send({status: "Succes", data: await cartManager.deleteAllProductsToCart(cartId)});
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});
     }
 })
@@ -94,6 +102,7 @@ router.post('/:cid/purchase', passportCall('jwtAuth', { session: false }), async
 
         res.status(200).send({status: "Succes", data: await cartManager.processPurchase(cartId, email)});
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});
     }
 })

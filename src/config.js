@@ -18,7 +18,8 @@ const config = {
         clientId: process.env.GITHUB_AUTH_CLIENT_ID,
         clientSecret: process.env.GITHUB_AUTH_CLIENT_SECRET,
         callbackUrl: `http://localhost:${commandLineOptions.opts().port || 3000}/api/sessions/githubcallback`
-    }
+    },
+    MODE: commandLineOptions.opts().mode || 'devel'
 };
 
 export default config;

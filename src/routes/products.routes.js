@@ -15,6 +15,7 @@ router.get('/', async (req, res) => {
 
         res.status(200).send({ status: "Succes", payload: result });
     } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: "Error", payload: err.message})
     }
 
@@ -22,25 +23,33 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:pid', async (req, res) => {
-    const productFound = await productManager.getProductById(req.params.pid);
+    try {
+        const productFound = await productManager.getProductById(req.params.pid);
 
-    if (productFound) {
-        res.status(200).send(productFound);
-    } else {
-        res.status(404).send(`No se ha encontrado ningún producto con el ID: ${req.params.pid}`);
+        if (productFound) {
+            res.status(200).send(productFound);
+        } else {
+            const message = `No se ha encontrado ningún producto con el ID: ${req.params.pid}`
+            req.logger.error({status:'ERR', code:'404', message});
+            res.status(404).send(message);
+        }
+        
+    } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
+        res.status(500).send({ status: "Error", payload: err.message})
     }
 });
 
-router.get('*', async (req, res) => {
-    res.status(404).send({ status: 'ERR', data: 'Endpoint no válido' })
-})
-
 router.post('/', uploader.single('thumbnail'), async (req, res) => {
-    if (!req.file) return res.status(400).send({ status: 'FIL', data: 'No se pudo subir el archivo' });
-
+    try {
+    if (!req.file) {
+        req.logger.error({status:'FIL', code:'400', message: 'No se pudo subir el archivo' });
+        return res.status(400).send({ status: 'FIL', data: 'No se pudo subir el archivo' });
+    }
     //Desestructuración del body para validar contenido
     const { title, description, price, code, stock, status, category } = req.body;
     if (!title || !price || !code || !stock || !status || !category) {
+        req.logger.error({status:'ERR', code:'400', message: 'Faltan campos obligatorios' });
         return res.status(400).send({ status: 'ERR', data: 'Faltan campos obligatorios' });
     }
     const newContent = {
@@ -65,18 +74,28 @@ router.post('/', uploader.single('thumbnail'), async (req, res) => {
     }
 
     res.status(200).send({ data: result });
+    } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
+        res.status(500).send({ status: "Error", payload: err.message})
+    }
 });
 
 router.put('/:pid', async (req, res) => {
+    try {
     const newContent = req.body;
     const pid = Number.parseInt(req.params.pid);
 
     const result = await productManager.updateProduct(pid, newContent);
 
     res.status(200).send(result);
+    } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
+        res.status(500).send({ status: "Error", payload: err.message})
+    }
 });
 
 router.delete('/:pid', async (req, res) => {
+    try {
     const productId = Number.parseInt(req.params.pid);
 
     await productManager.deleteProduct(productId);
@@ -88,6 +107,10 @@ router.delete('/:pid', async (req, res) => {
     }
 
     res.status(200).send("Producto eliminado");
+    } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
+        res.status(500).send({ status: "Error", payload: err.message})
+    }
 });
 
 router.param('pid', async (req, res, next, pid) => {
@@ -95,6 +118,7 @@ router.param('pid', async (req, res, next, pid) => {
     if (regex.test(req.params.pid)) {
         next();
     } else {
+        req.logger.error({status:'ERR', code:'404', message: 'Parámetro no válido' });
         res.status(404).send({ status: 'ERR', data: 'Parámetro no válido' })
     }
 })
