@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import CartManager from '../dao/cart.controller.js';
-import { passportCall } from '../utils.js';
+import { passportCall, authToken, handlePolicies } from '../utils.js';
+import CustomError from "../services/error.custom.class.js";
+import errorsDictionary from "../services/errors.dictionary.js";
 
 const router = Router();
 const cartManager = new CartManager();
 
-router.get('/', async (req, res) => {
+router.get('/', authToken, handlePolicies(['admin']), async (req, res) => {
     try {
         const result = await cartManager.getCarts();
         res.status(200).send({ status: 'Succes', data: result });
@@ -29,13 +31,13 @@ router.get('/:cid', async (req, res) => {
 
 })
 
-router.post('/', async (req, res) => {
+router.post('/', authToken, handlePolicies(['admin']), async (req, res) => {
     await cartManager.addCart();
 
     res.status(200).send("Carrito creado");
 })
 
-router.post('/:cid/product/:pid', async (req, res) => {
+router.post('/:cid/product/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
     try {
         const cartId = req.params.cid;
         const productId = req.params.pid;
@@ -47,7 +49,7 @@ router.post('/:cid/product/:pid', async (req, res) => {
     }
 })
 
-router.put('/:cid/product/:pid', async (req, res) => {
+router.patch('/:cid/product/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
     try {
         const cartId = req.params.cid;
         const productId = req.params.pid;
@@ -60,7 +62,7 @@ router.put('/:cid/product/:pid', async (req, res) => {
     }
 })
 
-router.put('/:cid', async (req, res) => {
+router.put('/:cid', authToken, handlePolicies(['admin']), async (req, res) => {
     try{
         const cartId = req.params.cid;
         const updatedProducts = req.body;
@@ -72,7 +74,7 @@ router.put('/:cid', async (req, res) => {
     }
 })
 
-router.delete('/:cid/product/:pid', async (req, res) => {
+router.delete('/:cid/product/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
     try {
         const cartId = req.params.cid;
         const productId = req.params.pid;
@@ -84,7 +86,7 @@ router.delete('/:cid/product/:pid', async (req, res) => {
     }
 })
 
-router.delete('/:cid', async (req, res) => {
+router.delete('/:cid', authToken, handlePolicies(['admin']), async (req, res) => {
     try {
         const cartId = req.params.cid;
 
@@ -105,6 +107,16 @@ router.post('/:cid/purchase', passportCall('jwtAuth', { session: false }), async
         req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});
     }
-})
+});
+
+router.param("cid", async (req, res, next) => {
+    const regex = new RegExp(/^[a-fA-F0-9]{24}$/);
+    
+    if (regex.test(req.params.cid)) {
+        next();
+    } else {
+      return next(new CustomError(errorsDictionary.INVALID_MONGOID_FORMAT));
+    }
+});
 
 export default router

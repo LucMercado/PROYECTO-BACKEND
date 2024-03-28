@@ -13,7 +13,8 @@ const errorsDictionary = {
     RECORD_CREATION_ERROR: { code: 500, message: 'Error al intentar crear el registro' },
     RECORD_CREATION_OK: { code: 200, message: 'Registro creado' },
     FORBIDDEN_ERROR: {code:403, message: 'Sin permisos suficientes'},
-    UNAUTHORIZED_ERROR: {code:401, message: 'No autorizado'}
+    UNAUTHORIZED_ERROR: {code:401, message: 'No autorizado'},
+    USER_NOT_FOUND: {code: 404, message: 'Usuario no encontrado'}
 }
 
 export default errorsDictionary;

@@ -40,7 +40,7 @@ router.get('/products/:pid', async (req, res) => {
     }
 })
 
-router.get('/carts/:cid', async (req, res) => {
+router.get('/carts/:cid', authToken, async (req, res) => {
     // Vista de los productos de un carrito
     const cartId = req.params.cid;
     const result = await cartManager.getCartById(cartId);
@@ -90,19 +90,21 @@ router.get('/login', async (req, res) => {
     }
 })
 
-router.get('/profile', async (req, res) => {
-    // Si el usuario tiene sesión activa, mostramos su perfil
-    if (req.session.user) {
-        const userInDB = await userController.getUserByEmail(req.session.user.username);
-        res.render('profile', { user: userInDB });
-    } else {
-        // sino volvemos al login
-        res.redirect('/login')
-    }
-})
-
 router.get('/register', async (req, res) => {
     res.render('register', {})
+})
+
+router.get('/send-restore-email', async (req, res) => {
+    res.render('send-restore-email', { msg: req.query.msg || null })
+})
+
+router.get('/restore-email-sent', async (req, res) => {
+    res.render('restore-email-sent', { msg: req.query.msg || null })
+})
+
+router.get('/restore', async (req, res) => {
+    const token = req.query.token
+    res.render('restore', { token, msg: req.query.msg || null })
 })
 
 router.get('/profilejwt', authToken, async (req, res) => {

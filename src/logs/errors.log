@@ -8,3 +8,28 @@
 [31mfatal[39m: Error fatal
 [35merror[39m: Error
 [35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: jwt is not defined {"code":"500","status":"ERR"}
+[35merror[39m: Cannot set headers after they are sent to the client {"code":"500","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: Cannot set headers after they are sent to the client {"code":"500","status":"ERR"}
+[35merror[39m: Usuario no encontrado {"code":404}
+[35merror[39m: Usuario no encontrado {"code":404}
+[35merror[39m: invalid expiresIn option for string payload {"code":"500","status":"ERR"}
+[35merror[39m: invalid expiresIn option for string payload {"code":"500","status":"ERR"}
+[35merror[39m: invalid expiresIn option for string payload {"code":"500","status":"ERR"}
+[35merror[39m: Cannot set headers after they are sent to the client {"code":"500","status":"ERR"}
+[35merror[39m: Token inválido o expirado
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: Token inválido o expirado
+[35merror[39m: Token inválido o expirado
+[35merror[39m: Token inválido o expirado
+[35merror[39m: Token inválido o expirado
+[35merror[39m: Cast to string failed for value "{ email: 'luquitasm99@gmail.com', iat: 1711658665, exp: 1711662265 }" (type Object) at path "email" for model "users" {"code":"500","status":"ERR"}
+[35merror[39m: Token inválido o expirado
+[35merror[39m: utils is not defined {"code":"500","status":"ERR"}
+[35merror[39m: Cannot set headers after they are sent to the client {"code":"500","status":"ERR"}

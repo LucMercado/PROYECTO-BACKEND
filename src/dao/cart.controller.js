@@ -1,4 +1,6 @@
 import CartService from "../services/cart.services.js";
+import CustomError from "../services/error.custom.class.js";
+import errorsDictionary from "../services/errors.dictionary.js";
 
 const cartService = new CartService;
 
@@ -17,7 +19,18 @@ export default class CartManager {
     }
 
     async addProductToCart(cid, pid, quantity) {
-        return await cartService.addProductToCartService(cid, pid, quantity);
+        const stockData = await productService.getProduct(pid);
+        
+        if (stockData === null) {
+            throw new CustomError(errorsDictionary.PRODUCT_NOT_FOUND);
+        } else {
+            const stock = stockData.stock;
+            if (stock < quantity) {
+                throw new CustomError({ ...errorsDictionary.INSUFFICIENT_STOCK, moreInfo: `max: ${stock} unidades` });
+            } else {
+                return await cartService.addProductToCartService(cid, pid, quantity);
+            }
+        }
     }
 
     async getCartById(id) {

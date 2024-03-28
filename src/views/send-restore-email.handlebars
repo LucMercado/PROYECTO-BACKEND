@@ -1,0 +1,34 @@
+<style>
+    .restore-container {
+        max-width: 360px;
+        margin: auto;
+        margin-top: 64px;
+    }
+</style>
+
+<div class="restore-container">
+    <h1><b>HYM MATERIALES</b></h1>
+    <h2>Restaurar contraseña</h2>
+
+    <form action="/api/sessions/send-restore-email" method="post" style="margin-top: 32px;">
+
+        <div class="input-group" style="width: 100%; margin-bottom: 8px;">
+            <span class="input-group-text" id="group1"><i class="fa-solid fa-user"></i></span>
+            <input type="email" name="email" class="form-control" placeholder="Email" required="required" autocomplete="email" autofocus="autofocus">
+        </div>
+
+        {{#if msg}}
+        <div style="margin-top: 24px;">
+            <div class="alert alert-danger" role="alert">{{msg}}</div>
+        </div>
+        {{/if}}
+        
+        <button type="submit" class="btn btn-success">Restaurar</button>
+        
+    </form>
+
+    <div style="margin-top: 15px;" >
+        <a href="/login">Volver a login</a>
+    </div>
+
+</div>

@@ -23,8 +23,9 @@
         </div>
 
         <div style="margin-bottom: 32px;">
-            <a href="/api/sessions/github">Ingresar con Github</a>
+            <a href="/send-restore-email">Olvidé mi contraseña</a>
         </div>
+        <button type="reset" class="btn btn-secondary btn-100" onclick="visit('/api/sessions/github')"><i class="fa-brands fa-github"></i> Ingresar con Github</button>
         
         {{#if msg}}
         <div style="margin-top: 24px;">
@@ -39,3 +40,9 @@
     <a href="/register"><button class="btn btn-primary" style="margin-top: 15px;">Registrarse</button></a>
     
 </div>
+
+<script>
+    const visit = (destination) => {
+        window.location.replace(destination);
+    }
+</script>

@@ -4,7 +4,6 @@ import { v4 as uuid } from 'uuid'
 class TicketDTO {
     constructor(total, email) {
         this.code = uuid();
-        this.purchase_datetime = Date.now;
         this.amount = total;
         this.purchaser = email;
     }

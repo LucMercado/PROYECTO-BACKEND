@@ -1,6 +1,9 @@
 import { Router } from "express";
 import ProductManager from "../dao/product.controller.js";
 import { uploader } from '../uploader.js'
+import CustomError from "../services/error.custom.class.js";
+import errorsDictionary from "../services/errors.dictionary.js";
+import { authToken, handlePolicies } from "../utils.js";
 
 
 const router = Router();
@@ -40,7 +43,7 @@ router.get('/:pid', async (req, res) => {
     }
 });
 
-router.post('/', uploader.single('thumbnail'), async (req, res) => {
+router.post('/', authToken, handlePolicies(['admin', 'premium']), uploader.single('thumbnail'), async (req, res) => {
     try {
     if (!req.file) {
         req.logger.error({status:'FIL', code:'400', message: 'No se pudo subir el archivo' });
@@ -80,7 +83,7 @@ router.post('/', uploader.single('thumbnail'), async (req, res) => {
     }
 });
 
-router.put('/:pid', async (req, res) => {
+router.put('/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
     try {
     const newContent = req.body;
     const pid = Number.parseInt(req.params.pid);
@@ -94,7 +97,7 @@ router.put('/:pid', async (req, res) => {
     }
 });
 
-router.delete('/:pid', async (req, res) => {
+router.delete('/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
     try {
     const productId = Number.parseInt(req.params.pid);
 
@@ -119,7 +122,7 @@ router.param('pid', async (req, res, next, pid) => {
         next();
     } else {
         req.logger.error({status:'ERR', code:'404', message: 'Parámetro no válido' });
-        res.status(404).send({ status: 'ERR', data: 'Parámetro no válido' })
+        return next(new CustomError(errorsDictionary.INVALID_MONGOID_FORMAT));
     }
 })
 

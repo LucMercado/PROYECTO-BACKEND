@@ -19,7 +19,9 @@ const config = {
         clientSecret: process.env.GITHUB_AUTH_CLIENT_SECRET,
         callbackUrl: `http://localhost:${commandLineOptions.opts().port || 3000}/api/sessions/githubcallback`
     },
-    MODE: commandLineOptions.opts().mode || 'devel'
+    MODE: commandLineOptions.opts().mode || 'devel',
+    GOOGLE_APP_EMAIL: process.env.GOOGLE_APP_EMAIL,
+    GOOGLE_APP_PASS: process.env.GOOGLE_APP_PASS
 };
 
 export default config;

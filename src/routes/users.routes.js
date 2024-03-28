@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import { UserController } from '../dao/user.controller.js';
 
+import { authToken, handlePolicies } from '../utils.js'
+
 const router = Router();
 const controller = new UserController();
 
-router.get('/', async (req, res) => {
+router.get('/', authToken, handlePolicies(['admin']), async (req, res) => {
     try {
         const users = await controller.getUsers()
         res.status(200).send({ status: 'OK', data: users });
@@ -14,7 +16,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', authToken, handlePolicies(['admin']), async (req, res) => {
     try {
         //Desestructuración del body para validar contenido
         const { first_name, last_name, email, age, password } = req.body;

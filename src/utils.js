@@ -2,6 +2,7 @@ import * as url from 'url'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
+import nodemailer from 'nodemailer'
 
 import CustomError from './services/error.custom.class.js'
 
@@ -59,4 +60,35 @@ export const handlePolicies = policies => {
         if (policies.includes(userRole)) return next();
         return next(new CustomError(errorsDictionary.FORBIDDEN_ERROR));
     }
+}
+
+export const mailerService = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    auth: {
+        user: config.GOOGLE_APP_EMAIL,
+        pass: config.GOOGLE_APP_PASS
+    }
+});
+
+// Enviar correo electrónico con el enlace de restablecimiento
+export const enviarCorreoRestablecimiento = (correoUsuario, token) => {
+    const enlaceRestablecimiento = `http://localhost:8080/restore?token=${token}`; //cambiar dominio cuando levante servidor
+
+    const transporter = mailerService;
+
+    const mailOptions = {
+        from: config.GOOGLE_APP_EMAIL,
+        to: correoUsuario,
+        subject: 'Restablecimiento de contraseña',
+        text: `Hola, para restablecer tu contraseña, haz clic en el siguiente enlace: ${enlaceRestablecimiento}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            throw new CustomError(error);
+        } else {
+            return 'Correo electrónico enviado:', info.response;
+        }
+    });
 }
