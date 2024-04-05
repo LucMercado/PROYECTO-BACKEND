@@ -1,0 +1,166 @@
+paths:
+  /api/carts:
+    get:
+      summary: 'Retorna todos los carritos disponibles'
+      tags:
+        - Carritos
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cart'
+        "500":
+          description: 'ERROR general'
+
+  /api/carts/{cid}:
+    get:
+      summary: 'Retorna un carrito por id'
+      tags:
+        - 'Carritos'
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: 'ID del carrito'
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Cart'
+        "404":
+          description: 'No se ha encontrado el carrito con el id indicado'
+        "500":
+          description: 'ERROR general'
+
+    put:
+      summary: 'Actualiza un carrito por id'
+      tags:
+        - 'Carritos'
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: 'ID del carrito'
+      requestBody:
+        description: 'Datos obligatorios en el body'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/updateCart'
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Cart'
+        "500":
+          description: 'ERROR general'
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: objectId
+          description: 'ID MongoDB'
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: object
+                properties:
+                  _id:
+                    type: objectId
+                    description: 'ID MongoDB'
+                  title:
+                    type: string
+                    description: 'Título del producto'
+                  description:
+                    type: string
+                    description: 'Descripción del producto'
+                  price:
+                    type: number
+                    description: 'Precio del producto'
+                  code:
+                    type: string
+                    description: 'Código del producto'
+                  stock:
+                    type: number
+                    description: 'Stock del producto'
+                  status:
+                    type: boolean
+                    description: 'Estado del producto'
+                  category:
+                    type: string
+                    description: 'Categoría del producto'
+                  thumbnail:
+                    type: string
+                    description: 'Imagen del producto'
+                  owner:
+                    type: string
+                    description: 'Dueño del producto'
+                description: 'Producto'
+              quantity:
+                type: integer
+                description: Cantidad de productos
+                default: 1
+        total:
+          type: number
+          description: Total de la compra
+      
+      example:
+        _id: 60f3b3b3b3b3b3b3b3b3b3
+        products: [
+          {
+            product: {
+              _id: 60f3b3b3b3b3b3b3b3b3b3,
+              title: 'Bolsón de arena',
+              description: 'Bolsón de arena de 1m3',
+              price: 15000,
+              code: '123456',
+              stock: 27,
+              status: true,
+              category: 'Bolsones',
+              thumbnail: 'https://www.google.com',
+              owner: 'admin'
+            },
+            quantity: 2
+          }
+        ]
+        total: 30000
+
+  requestBodies:
+    updateCart:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                type: objectId
+                description: ID MongoDB de producto (referencia a la colección de productos)
+        quantity:
+          type: integer
+          description: Cantidad de productos
+          default: 1
+        total:
+          type: number
+          description: Total de la compra
+          example: 100

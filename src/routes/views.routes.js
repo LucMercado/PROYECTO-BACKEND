@@ -54,12 +54,6 @@ router.get('/realtimeproducts', async (req, res) => {
     res.render('realtimeproducts', { products: result.data });
 });
 
-router.get('/chat', async (req, res) => {
-    res.render('chat', {
-        title: 'Chat de Compras'
-    })
-})
-
 // Dejamos esta ruta como PRIVADA, solo los usuarios admin pueden verla
 router.get('/users', authToken, handlePolicies(['admin']), async (req, res) => {
     try {

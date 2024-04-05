@@ -33,3 +33,13 @@
 [35merror[39m: Token inválido o expirado
 [35merror[39m: utils is not defined {"code":"500","status":"ERR"}
 [35merror[39m: Cannot set headers after they are sent to the client {"code":"500","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se encuentra la página solicitada {"code":"404","status":"ERR"}
+[35merror[39m: No se ha encontrado ningún carrito con el ID: 638b8c323f3a4b3be6dc397e {"code":"404","status":"ERR"}
+[35merror[39m: [object Object]
