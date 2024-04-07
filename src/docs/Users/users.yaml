@@ -15,6 +15,28 @@ paths:
                   $ref: '#/components/schemas/User'
         "500":
           description: 'ERROR general'
+    post:
+      summary: 'Crea un nuevo usuario'
+      tags:
+        - 'Usuarios'
+      requestBody:
+        description: 'Datos obligatorios en el body'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/updateUser'
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/User'
+        "500":
+          description: 'ERROR general'
 
   /api/users/{uid}:
     get:

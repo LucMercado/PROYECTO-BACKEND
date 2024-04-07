@@ -15,6 +15,28 @@ paths:
                   $ref: '#/components/schemas/Product'
         "500":
           description: 'ERROR general'
+    post:
+      summary: 'Crea un nuevo producto'
+      tags:
+        - 'Productos'
+      requestBody:
+        description: 'Datos obligatorios en el body'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/updateProduct'
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Product'
+        "500":
+          description: 'ERROR general'
 
   /api/products/{pid}:
     get:
@@ -65,6 +87,28 @@ paths:
                 type: object
                 items:
                   $ref: '#/components/schemas/Cart'
+        "500":
+          description: 'ERROR general'
+    delete:
+      summary: 'Elimina un producto por id'
+      tags:
+        - 'Productos'
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: 'ID del producto'
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Product'
+        "404":
+          description: 'No se ha encontrado el producto con el id indicado'
         "500":
           description: 'ERROR general'
 

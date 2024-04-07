@@ -15,6 +15,28 @@ paths:
                   $ref: '#/components/schemas/Cart'
         "500":
           description: 'ERROR general'
+    post:
+      summary: 'Crea un nuevo carrito'
+      tags:
+        - 'Carritos'
+      requestBody:
+        description: 'Datos obligatorios en el body'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/updateCart'
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Cart'
+        "500":
+          description: 'ERROR general'
 
   /api/carts/{cid}:
     get:
@@ -65,6 +87,114 @@ paths:
                 type: object
                 items:
                   $ref: '#/components/schemas/Cart'
+        "500":
+          description: 'ERROR general'
+    delete:
+      summary: 'Elimina un carrito por id'
+      tags:
+        - 'Carritos'
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: 'ID del carrito'
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Cart'
+        "404":
+          description: 'No se ha encontrado el carrito con el id indicado'
+        "500":
+          description: 'ERROR general'
+  /api/carts/{cid}/product/{pid}:
+    post:
+      summary: 'Agrega un producto a un carrito'
+      tags:
+        - 'Carritos'
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: 'ID del carrito'
+        - name: pid
+          in: path
+          required: true
+          description: 'ID del producto'
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Cart'
+        "404":
+          description: 'No se ha encontrado el carrito o el producto con el id indicado'
+        "500":
+          description: 'ERROR general'
+    patch:
+      summary: 'Actualiza la cantidad de un producto en un carrito'
+      tags:
+        - 'Carritos'
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: 'ID del carrito'
+        - name: pid
+          in: path
+          required: true
+          description: 'ID del producto'
+      requestBody:
+        description: 'Datos obligatorios en el body'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/updateQuantity'
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Cart'
+        "404":
+          description: 'No se ha encontrado el carrito o el producto con el id indicado'
+        "500":
+          description: 'ERROR general'
+    delete:
+      summary: 'Elimina un producto de un carrito'
+      tags:
+        - 'Carritos'
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: 'ID del carrito'
+        - name: pid
+          in: path
+          required: true
+          description: 'ID del producto'
+      responses:
+        "200":
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Cart'
+        "404":
+          description: 'No se ha encontrado el carrito o el producto con el id indicado'
         "500":
           description: 'ERROR general'
 
@@ -164,3 +294,10 @@ components:
           type: number
           description: Total de la compra
           example: 100
+    updateQuantity:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          description: Cantidad de productos
+          default: 1
