@@ -16,7 +16,7 @@ const userController = new UserController();
 // Vista de la página principal con todos los productos
 router.get('/products', authToken, async (req, res) => {
     try {
-        const page = req.query.page || 10;
+        const page = req.query.page || 1;
         res.render('home', {user: req.user, page});
     } catch (err) {
         req.logger.error({status:'ERR', code:'500', message: err.message});
@@ -38,12 +38,12 @@ router.get('/products/:pid', authToken, async (req, res) => {
 })
 
 // Vista de un carrito
-router.get('/carts/:cid', authToken, async (req, res) => {
+router.get('/cart', authToken, async (req, res) => {
     // Vista de los productos de un carrito
-    const cartId = req.params.cid;
+    const cartId = req.user.cart;
     const result = await cartManager.getCartById(cartId);
 
-    res.render('cart', { products: result.products, total: result.total});
+    res.render('cart', { products: result.products, total: result.total, cartId});
 })
 
 // Vista de administración de usuarios

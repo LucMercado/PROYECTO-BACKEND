@@ -11,7 +11,7 @@ const productManager = new ProductManager();
 
 router.get('/', async (req, res) => {
     try {
-        let limit = parseInt(req.query.limit) || 2;
+        let limit = parseInt(req.query.limit) || 10;
         let page = parseInt(req.query.page) || 1;
         
         const result = await productManager.getProducts(page, limit);

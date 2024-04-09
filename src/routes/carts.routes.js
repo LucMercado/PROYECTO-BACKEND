@@ -43,7 +43,7 @@ router.post('/:cid/product/:pid', authToken, async (req, res) => {
         const productId = req.params.pid;
 
         const process = await cartManager.addProductToCart(cartId, productId, 1);
-        res.status(200).redirect(`/carts/${cartId}`);
+        res.status(200).redirect(`/cart`);
         req.logger.info({status:'OK', code:'200', message: process});
     } catch (err) {
         req.logger.error({status:'ERR', code:'500', message: err.message});
@@ -88,11 +88,13 @@ router.delete('/:cid/product/:pid', authToken, handlePolicies(['admin']), async 
     }
 })
 
-router.delete('/:cid', authToken, handlePolicies(['admin']), async (req, res) => {
+router.delete('/:cid', authToken, async (req, res) => {
     try {
         const cartId = req.params.cid;
-
-        res.status(200).send({status: "Succes", data: await cartManager.deleteAllProductsToCart(cartId)});
+        
+        const result = await cartManager.deleteAllProductsToCart(cartId)
+        req.logger.info({status:'OK', code:'200', message: result});
+        res.status(200).send({status: "Succes", data: result});
     } catch (err) {
         req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});

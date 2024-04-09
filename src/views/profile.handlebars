@@ -1,5 +1,4 @@
 <div>
-    <h1>HYM Materiales</h1>
     <h2>Perfil de Usuario</h2>
     <p>Nombre:{{user.first_name}}</p>
     <p>Apellido: {{user.last_name}}</p>
@@ -10,7 +9,7 @@
 
     <a href="/products" class="btn btn-primary">Ver Productos</a>
 
-    <a href="/carts/{{user.cart}}" class="btn btn-success">Ver Carrito</a>
+    <a href="/cart" class="btn btn-success">Ver Carrito</a>
 
 
     <form action="/api/sessions/logout" method="get">

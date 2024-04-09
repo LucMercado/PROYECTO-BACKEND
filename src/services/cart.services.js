@@ -83,9 +83,10 @@ export default class CartService {
         try {
             const process = await cartModel.findByIdAndUpdate(
                 id,
-                { $set: { products: [] } },
+                { $set: { products: [], total: 0 } },
                 { new: true }
             );
+
             return "Se han eliminado todos los productos del carrito";
         } catch (err) {
             return err.message;
