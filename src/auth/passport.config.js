@@ -1,186 +1,210 @@
 /**
  * passport.local siempre requiere 2 cosas: username y password
- * 
+ *
  * podemos usar el parámetro usernameField para cambiar el nombre del campo que
  * manejaremos como usuario (email en nuestro caso)
- * 
+ *
  * passport utiliza un callback done():
  *  - parámetro 1: el error (null indica que no hay error)
  *  - parámetro 2: el objeto con datos de usuario que se devuelve en la respuesta
  *      - done(null, user) -> user tendrá los datos de usuario
  *      - done(null, false) -> no hay error pero los datos de usuario no se devuelven
- * 
+ *
  * passport.use() nos permite configurar distintas estrategias
  */
 
-import passport from 'passport'
-import LocalStrategy from 'passport-local'
-import GithubStrategy from 'passport-github2'
-import jwt from 'passport-jwt'
+import passport from "passport";
+import LocalStrategy from "passport-local";
+import GithubStrategy from "passport-github2";
+import jwt from "passport-jwt";
 
-import userModel from '../dao/models/user.model.js'
-import { createHash, isValidPassword } from '../utils.js'
 
-import config from '../config.js'
+import userModel from "../dao/models/user.model.js";
+import CartManager from "../dao/cart.controller.js";
+import { createHash, isValidPassword } from "../utils.js";
+
+import config from "../config.js";
+
+const cartManager = new CartManager();
+
+class UserDTO {
+    constructor(user){
+        this.email = user.email;
+        this.password = createHash(user.password);
+        this.first_name = user.first_name;
+        this.last_name = user.last_name;
+        this.age = user.age;
+    }
+    static async createUser(user) {
+        const cart = await cartManager.addCart();
+        return new UserDTO({
+            email: user.email,
+            password: user.password,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            age: user.age,
+            cart: cart
+        });
+    }
+}
 
 const initPassport = () => {
     // Función utilizada por la estrategia loginAuth
     const verifyLogin = async (req, username, password, done) => {
         try {
-            const userInDb = await userModel.findOne({ email: username })
-            
+            const userInDb = await userModel.findOne({ email: username });
+
             if (userInDb !== null && isValidPassword(userInDb, password)) {
                 const { _id, password, ...user } = userInDb._doc;
+                userInDb.lastConnection = new Date();
                 if (user) return done(null, user);
             }
 
             done(null, false);
         } catch (err) {
-            return done(`Error passport login: ${err.message}`)
+            return done(`Error passport login: ${err.message}`);
         }
-    }
-
+    };
 
     // Función utilizada por la estrategia registerAuth
     const verifyRegistration = async (req, username, password, done) => {
         try {
-            const { first_name, last_name, email, age } = req.body
+            const { first_name, last_name, email, age } = req.body;
 
             if (!first_name || !last_name || !email || !age) {
-                return done('Se requiere first_name, last_name, email y gender en el body', false)
+                return done(
+                    "Se requiere first_name, last_name, email y age en el body",
+                    false
+                );
             }
-
-            const user = await userModel.findOne({ email: username })
+            const user = await userModel.findOne({ email: username });
 
             // El usuario ya existe, llamamos a done() para terminar el proceso de
             // passport, con null (no hay error) y false (sin devolver datos de usuario)
-            if (user) return done(null, false)
-            
+            if (user) return done(null, false);
+
             const newUser = {
                 first_name,
                 last_name,
                 email,
                 age,
-                password: createHash(password)
-            }
+                password: createHash(password),
+                cart: await cartManager.addCart()
+            };
 
-            const process = await userModel.create(newUser)
+            console.log(newUser)
 
-            return done(null, process)
+            const process = await userModel.create(newUser);
+
+            return done(null, process);
         } catch (err) {
-            return done(`Error passport local: ${err.message}`)
+            return done(`Error passport local: ${err.message}`);
         }
-    }
-
-    // Función utilizada por la estrategia restoreAuth
-    const verifyRestoration = async (req, username, password, done) => {
-        try {
-            if (username.length === 0 || password.length === 0) {
-                return done('Se requiere email y pass en el body', false)
-            }
-
-            const user = await userModel.findOne({ email: username })
-
-            // El usuario no existe, no podemos restaurar nada.
-            // Llamamos a done() para terminar el proceso de
-            // passport, con null (no hay error) y false (sin devolver datos de usuario)
-            if (!user) return done(null, false)
-
-            const process = await userModel.findOneAndUpdate({ email: username }, { password: createHash(password) })
-
-            return done(null, process)
-        } catch (err) {
-            return done(`Error passport local: ${err.message}`)
-        }
-    }
+    };
 
     const verifyGithub = async (accessToken, refreshToken, profile, done) => {
         try {
-            const user = await userModel.findOne({ email: profile._json.email })
+            const user = await userModel.findOne({ email: profile._json.email });
 
             if (!user) {
-                const name_parts = profile._json.name.split(' ')
+                const name_parts = profile._json.name.split(" ");
                 const newUser = {
                     first_name: name_parts[0],
                     last_name: name_parts[1],
                     email: profile._json.email,
                     age: 1,
-                    password: ' '
-                }
-    
-                const process = await userModel.create(newUser)
-    
-                return done(null, process)
+                    password: " ",
+                    cart: await cartManager.addCart()
+                };
+
+                const process = await userModel.create(newUser);
+
+                return done(null, process);
             } else {
-                done(null, user)
+                done(null, user);
             }
         } catch (err) {
-            return done(`Error passport Github: ${err.message}`)
+            return done(`Error passport Github: ${err.message}`);
         }
-    }
+    };
 
     const verifyJwt = async (payload, done) => {
         try {
-            return done (null, payload);
+            return done(null, payload);
         } catch (err) {
             return done(err);
         }
-    }
+    };
 
     const cookieExtractor = (req) => {
         let token = null;
-        if (req && req.cookies) token = req.cookies['tokenHYM'];
+        if (req && req.cookies) token = req.cookies["tokenHYM"];
         return token;
-    }
+    };
 
     // Creamos estrategia local de autenticación para login
-    passport.use('loginAuth', new LocalStrategy({
-        passReqToCallback: true,
-        usernameField: 'email',
-        passwordField: 'pass'
-    }, verifyLogin))
+    passport.use(
+        "loginAuth",
+        new LocalStrategy(
+            {
+                passReqToCallback: true,
+                usernameField: "email",
+                passwordField: "pass",
+            },
+            verifyLogin
+        )
+    );
 
+    // Creamos estrategia para autenticación externa con Github
+    passport.use(
+        "githubAuth",
+        new GithubStrategy(
+            {
+                clientID: config.GITHUB_AUTH.clientId,
+                clientSecret: config.GITHUB_AUTH.clientSecret,
+                callbackURL: config.GITHUB_AUTH.callbackUrl,
+            },
+            verifyGithub
+        )
+    );
 
-
-     // Creamos estrategia para autenticación externa con Github
-    passport.use('githubAuth', new GithubStrategy({
-        clientID: config.GITHUB_AUTH.clientId,
-        clientSecret: config.GITHUB_AUTH.clientSecret,
-        callbackURL: config.GITHUB_AUTH.callbackUrl
-    }, verifyGithub))
-    
     // Creamos estrategia local de autenticación para registro
-    passport.use('registerAuth', new LocalStrategy({
-        passReqToCallback: true,
-        usernameField: 'email',
-        passwordField: 'pass'
-    }, verifyRegistration))
+    passport.use(
+        "registerAuth",
+        new LocalStrategy(
+            {
+                passReqToCallback: true,
+                usernameField: "email",
+                passwordField: "pass",
+            },
+            verifyRegistration
+        )
+    );
 
-    // Creamos estrategia local de autenticación para restauración de clave
-    passport.use('restoreAuth', new LocalStrategy({
-        passReqToCallback: true,
-        usernameField: 'email',
-        passwordField: 'pass'
-    }, verifyRestoration))
+    passport.use(
+        "jwtAuth",
+        new jwt.Strategy(
+            {
+                jwtFromRequest: jwt.ExtractJwt.fromExtractors([cookieExtractor]),
+                secretOrKey: config.SECRET_KEY,
+            },
+            verifyJwt
+        )
+    );
 
-    passport.use('jwtAuth', new jwt.Strategy({
-        jwtFromRequest: jwt.ExtractJwt.fromExtractors([cookieExtractor]),
-        secretOrKey: config.SECRET_KEY
-    }, verifyJwt))
-        
     // Métodos "helpers" de passport para manejo de datos de sesión
     // Son de uso interno de passport, normalmente no tendremos necesidad de tocarlos.
     passport.serializeUser((user, done) => {
-        done(null, user._id)
-    })
-        
+        done(null, user._id);
+    });
+
     passport.deserializeUser(async (id, done) => {
         try {
-            done(null, await userModel.findById(id))
+            done(null, await userModel.findById(id));
         } catch (err) {
-            done(err.message)
+            done(err.message);
         }
-    })
-}
+    });
+};
 
-export default initPassport
+export default initPassport;

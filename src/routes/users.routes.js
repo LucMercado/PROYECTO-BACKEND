@@ -6,9 +6,10 @@ import { authToken, handlePolicies } from '../utils.js'
 const router = Router();
 const controller = new UserController();
 
-router.get('/', authToken, handlePolicies(['admin']), async (req, res) => {
+router.get('/', authToken, async (req, res) => {
     try {
-        const users = await controller.getUsers()
+        const users = await controller.getUsers();
+        req.logger.info({status:'OK', code:'200', message: "Usuarios obtenidos"});
         res.status(200).send({ status: 'OK', data: users });
     } catch (err) {
         req.logger.error({status:'ERR', code:'500', message: err.message});
@@ -36,6 +37,43 @@ router.post('/', authToken, handlePolicies(['admin']), async (req, res) => {
     } catch (err) {
         req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: 'ERR', data: err.message })
+    }
+})
+
+router.delete('/:uid', authToken, handlePolicies(['admin']), async (req, res) => {
+    try {
+        const uid = req.params.uid;
+        const result = await controller.deleteUser(uid);
+        req.logger.info({status:'OK', code:'200', message: "Usuario eliminado"});
+        res.status(200).send({ status: 'OK', data: result });
+    } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
+        res.status(500).send({ status: 'ERR', data: err.message });
+    }
+})
+
+router.delete('/', authToken, handlePolicies(['admin']), async (req, res) => {
+    try {
+        const result = await controller.deleteInactivityUsers();
+
+        req.logger.info({status:'OK', code:'200', message: result});
+        res.status(200).send({ status: 'OK', message: result });
+    } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
+        res.status(500).send({ status: 'ERR', data: err.message });
+    }
+})
+
+router.patch('/:uid', authToken, handlePolicies(['admin']), async (req, res) => {
+    try {
+        const userId = req.params.uid;
+        const { role } = req.body;
+        //armar
+        req.logger.info({status:'OK', code:'200', message: "Rol actualizado"});
+        res.status(200).send({ status: 'OK', data: await controller.updateUser(userId, newContent) });
+    } catch (err) {
+        req.logger.error({status:'ERR', code:'500', message: err.message});
+        res.status(500).send({ status: 'ERR', data: err.message });
     }
 })
 export default router

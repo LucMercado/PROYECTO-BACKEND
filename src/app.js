@@ -30,17 +30,19 @@ const PORT = config.PORT;
 const MONGOOSE_URL = config.MONGOOSE_URL;
 
 try {
+    // Inicialización de la base de datos
     await MongoSingleton.getInstance();
     const app = express();
+
 
     // Configuración de Swagger
     const swaggerOptions = {
         definition: {
             openapi: "3.0.1",
             info: {
-                title: "Documentación Backend de aplicación ecommerce HYM Materiales",
+                title: "Documentación HYM Materiales",
                 description:
-                    "Esta documentación cubre toda la API habilitada para AdoptMe",
+                    "Esta documentación describe los endpoints de la API del BACKEND de HYM Materiales",
             },
         },
         apis: ["./src/docs/**/*.yaml"], // todos los archivos de configuración de rutas estarán aquí

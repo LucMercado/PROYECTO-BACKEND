@@ -37,12 +37,14 @@ router.post('/', authToken, handlePolicies(['admin']), async (req, res) => {
     res.status(200).send("Carrito creado");
 })
 
-router.post('/:cid/product/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
+router.post('/:cid/product/:pid', authToken, async (req, res) => {
     try {
         const cartId = req.params.cid;
         const productId = req.params.pid;
 
-        res.status(200).send({status: "Succes", data: await cartManager.addProductToCart(cartId, productId, 1)});
+        const process = await cartManager.addProductToCart(cartId, productId, 1);
+        res.status(200).redirect(`/carts/${cartId}`);
+        req.logger.info({status:'OK', code:'200', message: process});
     } catch (err) {
         req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});

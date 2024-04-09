@@ -14,12 +14,24 @@ export class UserController {
         return await userService.addUserService(user);
     }
 
+    async updateUser(user) {
+        return await userService.updateUserService(user);
+    }
+
     async getUsersPaginated(page, limit) {
         return await userService.getUsersPaginatedService(page, limit);
     }
 
     async getUserByEmail(email){
         return await userService.getUserByEmailService(email);
+    }
+
+    async deleteUser(email){
+        return await userService.deleteUserService(email);
+    }
+
+    async deleteInactivityUsers(){
+        return await userService.deleteInactivityUsersService();
     }
 
     async generateMockUsers(qty){

@@ -16,7 +16,6 @@ export default class ProductService {
     }
 
     async getProductsService(page, limit) { 
-
         try {
             const result = await productModel.paginate(
                 {},
@@ -26,8 +25,8 @@ export default class ProductService {
         } catch (err) {
             return err.message;
         }
-
     }
+
 
     async getProductByIdService(id) {
         try {

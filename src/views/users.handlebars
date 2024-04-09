@@ -1,10 +1,6 @@
 <h1>HYM MATERIALES</h1>
 <h2>{{title}}</h2>
 
-<form action="/api/sessions/logout" method="get" style="margin-bottom: 24px;">
-    <button ="submit" class="btn btn-success">Salir</button>
-</form>type
-
 <nav aria-label="Paginacion">
     <ul class="pagination">
         {{#if data.hasPrevPage}}<li class="page-item"><a class="page-link" href="/users?page={{data.prevPage}}">Ant</a></li>{{/if}}
@@ -19,7 +15,35 @@
         <li class="list-group-item">
             <p>{{this.first_name}}</p>
             <p>{{this.last_name}}</p>
-            <hr>
+            <p>{{this.email}}</p>
+            <div class="form-group">
+                <label for="role">Rol:</label>
+                <select class="form-control" id="role" name="role" data-user-id="{{this._id}}">
+                    <option value="user" {{#ifEquals this.role "user"}} selected {{/ifEquals}}>Usuario</option>
+                    <option value="admin" {{#ifEquals this.role "admin"}} selected {{/ifEquals}}>Administrador</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-danger" onclick="deleteUser('{{this._id}}')">Eliminar</button>
         </li>
     {{/each}}
 </ul>
+
+<script>
+    function deleteUser(userId) {
+        if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+            fetch('/api/users/' + userId, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('No se pudo eliminar el usuario');
+                }
+            });
+        }
+    }
+</script>

@@ -11,8 +11,8 @@ export default class CartService {
     async addCartService() {
         const cart = { products: [], total: 0 };
         try {
-            await cartModel.create(cart);
-            return "Carrito agregado";
+            const newCart = await cartModel.create(cart);
+            return newCart._id; // Devolver el ID del carrito creado
         } catch (err) {
             return err.message;
         }
@@ -31,7 +31,7 @@ export default class CartService {
         }
     }
 
-    async addProductToCartService(cid, pid, quantity) {
+    async addProductToCartService(cid, pid, quantity, price) {
         try {
             const cartFound = await cartModel.findById(cid);
             if (cartFound) {
@@ -40,13 +40,17 @@ export default class CartService {
                 );
                 if (productIndex !== -1) {
                     cartFound.products[productIndex].quantity += quantity;
+                    cartFound.total += price * quantity;
                     await cartFound.save();
+
                 } else {
                     cartFound.products.push({ product: pid, quantity: quantity });
+                    const product = await productModel.findById(pid).lean();
+                    cartFound.total += price * quantity;
                     await cartFound.save();
                 }
             } else {
-                return "No se encontro carrito con ese id";
+                return "No se encontro carrito o producto con ese id";
             }
 
             return "Producto agregado al carrito";

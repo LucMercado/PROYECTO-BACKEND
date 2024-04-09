@@ -4,11 +4,17 @@
     <p>Nombre:{{user.first_name}}</p>
     <p>Apellido: {{user.last_name}}</p>
     <p>Edad: {{user.age}}</p>
+    <p>Email: {{user.email}}</p>
 
     <p>ROL: {{user.role}}</p>
 
-    <form action="/api/sessions/logout" method="get" style="margin-bottom: 24px;">
-        <button type="submit" class="btn btn-success">Cerrar Sesion</button>
+    <a href="/products" class="btn btn-primary">Ver Productos</a>
+
+    <a href="/carts/{{user.cart}}" class="btn btn-success">Ver Carrito</a>
+
+
+    <form action="/api/sessions/logout" method="get">
+        <button type="submit" class="btn btn-dark" style="margin-top: 24px;">Cerrar Sesión</button>
     </form>
 
 </div>

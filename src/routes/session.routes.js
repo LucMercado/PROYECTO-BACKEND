@@ -64,9 +64,8 @@ router.get('/github', passport.authenticate('githubAuth', { scope: ['user:email'
 })
 
 router.get('/githubcallback', passport.authenticate('githubAuth', { failureRedirect: '/login' }), async (req, res) => {
-    req.session.user = { username: req.user.email, role: 'user' }
-    // req.session.user = req.user
-    res.redirect('/profile')
+    const token = generateToken(req.user, '1h');
+    res.redirect('/profilejwt?token=' + token);
 })
 
 router.get('/current', passportCall('jwtAuth', { session: false }), handlePolicies(['user', 'premium', 'admin']), async (req, res) => {
@@ -97,9 +96,14 @@ router.post('/login_manual_jwt', async (req, res) => {
 })
 
 router.post('/login_passport_jwt', passport.authenticate('loginAuth', { failureRedirect: '/login?msg=Usuario o clave no válidos', session: false }), async (req, res) => {
-    const access_token = generateToken(req.user, '1h')
-    res.cookie('tokenHYM', access_token, { maxAge: 60 * 60 * 1000, httpOnly: true })
-    setTimeout(() => res.redirect('/profilejwt'), 200);
+    try {
+        const access_token = generateToken(req.user, '1h')
+        res.cookie('tokenHYM', access_token, { maxAge: 60 * 60 * 1000, httpOnly: true })
+        setTimeout(() => res.redirect('/profilejwt'), 200);
+    } catch (err) {
+        req.logger.error({ status: 'ERR', code: '500', message: err.message });
+        res.status(500).send({ status: 'ERR', data: err.message })
+    }
 })
 
 router.post('/register', passport.authenticate('registerAuth', { failureRedirect: '/api/sessions/failregister' }), async (req, res) => {
@@ -116,7 +120,7 @@ router.post('/send-restore-email', async (req, res) => {
         const { email } = req.body;
         const userInDb = await userModel.findOne({ email: email });
         if (userInDb !== null) {
-            const token = generateToken({email:userInDb.email}, '1h');
+            const token = generateToken({ email: userInDb.email }, '1h');
 
             const data = enviarCorreoRestablecimiento(email, token);
             req.logger.info(data);
@@ -141,17 +145,17 @@ router.post('/restore', async (req, res) => {
                 req.logger.error('Token inválido o expirado');
                 return res.redirect('/send-restore-email?msg=Token inválido o expirado.');
             }
-            
+
             return decoded.email
         });
         const userInDb = await userModel.findOne({ email: email });
-        if (userInDb!== null) {
+        if (userInDb !== null) {
             //Comparo si la nueva contraseña es la contraseña actual
             const samePassword = isValidPassword(userInDb, newPassword);
             if (samePassword) {
                 req.logger.warning('La nueva contraseña no puede ser igual a la contraseña actual elija otra.');
                 res.redirect(`/restore?token=${encodeURIComponent(token)}&msg=La nueva contraseña no puede ser igual a la actual, elija otra.`);
-            }else{
+            } else {
                 userInDb.password = createHash(newPassword);
                 userInDb.save();
                 req.logger.info('Contraseña restablecida exitosamente');

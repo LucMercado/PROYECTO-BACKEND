@@ -1,22 +1,119 @@
-<div>
-    <h1>HYM MATERIALES</h1>
+<h1>HYM MATERIALES</h1>
+<h2>HOLA {{user.first_name}}!!</h2>
+<h2>PRODUCTOS</h2>
+<input type="hidden" id="cart-id" name="cartId" value={{user.cart}}>
+<input type="hidden" id="page" name="page" value={{page}}>
 
-    <h2>PRODUCTOS</h2>
-    <ul>
-        {{#each products}}
-        <li id=product-{{this._id}}>
-            <a href=products/{{this._id}}>
-                <hr>
-                <h3>{{this.title}}</h3>
-                <p>Precio: {{this.price}}</p>
-                <p>Descripción: {{this.description}}</p>
-                <p>Categoría: {{this.category}}</p>
-                <form action=/api/carts/65821dba69b0fba98996a2ea/product/{{this._id}} method="POST">
-                    
-                    <button type="submit">Agregar al carrito</button>
-                </form>
-            </a>
-        </li>
-        {{/each}}
+<div id="pagination-container"></div>
+
+<div>
+    <ul id="product-container">
     </ul>
 </div>
+
+<script>
+    const cartId = document.getElementById('cart-id').value;
+    const productContainer = document.getElementById('product-container');
+    const page = document.getElementById('page').value;
+
+    fetch('/api/products?page=' + page)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ocurrió un error al obtener los productos.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Crear el elemento nav
+            const nav = document.createElement('nav');
+            nav.setAttribute('aria-label', 'Paginacion');
+
+            // Crear el elemento ul con la clase pagination
+            const ul = document.createElement('ul');
+            ul.classList.add('pagination');
+
+            // Crear el elemento li y a para el enlace "Anterior" si hay página anterior
+            if (data.payload.hasPrevPage) {
+                const liPrev = document.createElement('li');
+                liPrev.classList.add('page-item');
+                const aPrev = document.createElement('a');
+                aPrev.classList.add('page-link');
+                aPrev.href = `/products?page=${data.payload.prevPage}`;
+                aPrev.textContent = 'Ant';
+                liPrev.appendChild(aPrev);
+                ul.appendChild(liPrev);
+            }
+
+            // Crear el elemento li y a para la página 1
+            const liPage1 = document.createElement('li');
+            liPage1.classList.add('page-item');
+            const aPage1 = document.createElement('a');
+            aPage1.classList.add('page-link');
+            aPage1.href = '/products?page=1';
+            aPage1.textContent = 'Pg 1';
+            liPage1.appendChild(aPage1);
+            ul.appendChild(liPage1);
+
+            // Crear el elemento li y a para mostrar la página actual y el total de páginas
+            const liPageInfo = document.createElement('li');
+            liPageInfo.classList.add('page-item');
+            const aPageInfo = document.createElement('a');
+            aPageInfo.classList.add('page-link');
+            aPageInfo.href = '#';
+            aPageInfo.textContent = `Pg ${data.payload.page} de ${data.payload.totalPages}`;
+            liPageInfo.appendChild(aPageInfo);
+            ul.appendChild(liPageInfo);
+
+            // Crear el elemento li y a para el enlace "Siguiente" si hay página siguiente
+            if (data.payload.hasNextPage) {
+                const liNext = document.createElement('li');
+                liNext.classList.add('page-item');
+                const aNext = document.createElement('a');
+                aNext.classList.add('page-link');
+                aNext.href = `/products?page=${data.payload.nextPage}`;
+                aNext.textContent = 'Sig';
+                liNext.appendChild(aNext);
+                ul.appendChild(liNext);
+            }
+
+            nav.appendChild(ul);
+            
+            const container = document.getElementById('pagination-container');
+            container.appendChild(nav);
+
+            const products = data.payload.docs;
+            products.forEach(product => {
+                const productElement = document.createElement('li');
+                if (product.stock > 0) {
+                    productElement.innerHTML = `
+                    <hr>
+                    <a href="products/${product._id}">
+                    <h3>${product.title}</h3>
+                    <p>Precio: ${product.price}</p>
+                    <p>Descripción: ${product.description}</p>
+                    <p>Categoría: ${product.category}</p>
+                    <p>Stock: ${product.stock}</p>
+                    <form action="/api/carts/${cartId}/product/${product._id}" method="POST">
+                        <button type="submit" class="btn btn-secondary">Agregar al carrito</button>
+                    </form>
+                    </a>
+                `;
+                } else {
+                    productElement.innerHTML = `
+                        <hr>
+                        <a href="products/${product._id}">
+                        <h3>${product.title}</h3>
+                        <p>Precio: ${product.price}</p>
+                        <p>Descripción: ${product.description}</p>
+                        <p>Categoría: ${product.category}</p>
+                        <p>Stock: Sin stock</p>
+                        </a>
+                    `;
+                }
+                productContainer.appendChild(productElement);
+            })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+</script>

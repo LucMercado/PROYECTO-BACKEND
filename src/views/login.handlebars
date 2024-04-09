@@ -25,7 +25,6 @@
         <div style="margin-bottom: 32px;">
             <a href="/send-restore-email">Olvidé mi contraseña</a>
         </div>
-        <button type="reset" class="btn btn-secondary btn-100" onclick="visit('/api/sessions/github')"><i class="fa-brands fa-github"></i> Ingresar con Github</button>
         
         {{#if msg}}
         <div style="margin-top: 24px;">
@@ -34,6 +33,7 @@
         {{/if}}
 
         <button type="submit" class="btn btn-success" >Ingresar</button>
+        <button type="reset" class="btn btn-secondary btn-100" onclick="visit('/api/sessions/github')"><i class="fa-brands fa-github"></i> Ingresar con Github</button>
     </form>
 
     

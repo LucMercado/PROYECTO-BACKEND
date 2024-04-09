@@ -1,8 +1,10 @@
 import CartService from "../services/cart.services.js";
 import CustomError from "../services/error.custom.class.js";
 import errorsDictionary from "../services/errors.dictionary.js";
+import ProductController from "./product.controller.js";
 
 const cartService = new CartService;
+const productManager = new ProductController;
 
 export default class CartManager {
 
@@ -19,7 +21,7 @@ export default class CartManager {
     }
 
     async addProductToCart(cid, pid, quantity) {
-        const stockData = await productService.getProduct(pid);
+        const stockData = await productManager.getProductById(pid);
         
         if (stockData === null) {
             throw new CustomError(errorsDictionary.PRODUCT_NOT_FOUND);
@@ -28,7 +30,7 @@ export default class CartManager {
             if (stock < quantity) {
                 throw new CustomError({ ...errorsDictionary.INSUFFICIENT_STOCK, moreInfo: `max: ${stock} unidades` });
             } else {
-                return await cartService.addProductToCartService(cid, pid, quantity);
+                return await cartService.addProductToCartService(cid, pid, quantity, stockData.price);
             }
         }
     }

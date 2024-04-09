@@ -12,7 +12,8 @@ const schema = new mongoose.Schema({
     age: { type: Number, required: true },
     password: { type: String, required: true },
     cart: { type: mongoose.Schema.Types.ObjectId },
-    role: { type: String, enum: ['user', 'premium', 'admin'], default: 'user' }
+    role: { type: String, enum: ['user', 'premium', 'admin'], default: 'user' },
+    lastConnection: { type: Date, default: Date.now }
 });
 
 schema.plugin(mongoosePaginate)
