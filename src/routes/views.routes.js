@@ -17,34 +17,67 @@ const userController = new UserController();
 router.get('/products', authToken, async (req, res) => {
     try {
         const page = req.query.page || 1;
-        res.render('home', {user: req.user, page});
+        res.render('home', { user: req.user, page });
     } catch (err) {
-        req.logger.error({status:'ERR', code:'500', message: err.message});
-        res.status(500).send({ status: "Error", payload: err.message});
+        req.logger.error({ status: 'ERR', code: '500', message: err.message });
+        res.status(500).send({ status: "Error", payload: err.message });
     }
-    
+
 });
+
+// Vista para crear un producto
+
+router.get('/products/create', authToken, handlePolicies(['admin', 'premium']), async (req, res) => {
+    try {
+        res.render('create-product', { user: req.user });
+    } catch (err) {
+        req.logger.error({ status: 'ERR', code: '500', message: err.message });
+        res.status(500).send({ status: "Error", payload: err.message });
+    }
+})
 
 //Vista de un producto individual
 router.get('/products/:pid', authToken, async (req, res) => {
     try {
         const productId = req.params.pid;
         const product = await productManager.getProductById(productId);
-        res.render('product', { product, user: req.user});
+        res.render('product', { product, user: req.user });
     } catch (err) {
-        req.logger.error({status:'ERR', code:'500', message: err.message});
-        res.status(500).send({ status: "Error", payload: err.message})
+        req.logger.error({ status: 'ERR', code: '500', message: err.message });
+        res.status(500).send({ status: "Error", payload: err.message })
     }
 })
 
 // Vista de un carrito
 router.get('/cart', authToken, async (req, res) => {
-    // Vista de los productos de un carrito
-    const cartId = req.user.cart;
-    const result = await cartManager.getCartById(cartId);
+    try {
+        const cartId = req.user.cart;
+        const result = await cartManager.getCartById(cartId);
 
-    res.render('cart', { products: result.products, total: result.total, cartId});
+        if (!result) return res.render('cart', { products: [], total: 0, cartId });
+
+        res.render('cart', { products: result.products, total: result.total, cartId });
+    } catch (err) {
+        req.logger.error({ status: 'ERR', code: '500', message: err.message });
+        res.status(500).send({ status: "Error", payload: err.message });
+    }
 })
+
+// Vista del checkout
+
+router.get('/checkout', authToken, async (req, res) => {
+    try {
+        const cartId = req.user.cart;
+        const result = await cartManager.getCartById(cartId);
+
+        if (!result) return res.status(404).send({ status: "Error", payload: "No se ha encontrado ningún carrito" });
+        res.render('checkout', { products: result.products, total: result.total, cartId });
+    } catch (err) {
+        req.logger.error({ status: 'ERR', code: '500', message: err.message });
+        res.status(500).send({ status: "Error", payload: err.message });
+    }
+})
+
 
 // Vista de administración de usuarios
 router.get('/users', authToken, handlePolicies(['admin']), async (req, res) => {
@@ -53,7 +86,7 @@ router.get('/users', authToken, handlePolicies(['admin']), async (req, res) => {
         data.pages = []
         for (let i = 1; i <= data.totalPages; i++) data.pages.push(i)
 
-        handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+        handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
             return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
         });
 
@@ -62,18 +95,18 @@ router.get('/users', authToken, handlePolicies(['admin']), async (req, res) => {
             data: data
         })
     } catch (err) {
-        req.logger.error({status:'ERR', code:'500', message: err.message});
-        res.status(500).send({ status: "Error", payload: err.message})
+        req.logger.error({ status: 'ERR', code: '500', message: err.message });
+        res.status(500).send({ status: "Error", payload: err.message })
     }
-    
+
 })
 
 // Vista de Login
 router.get('/login', async (req, res) => {
     // Si el usuario tiene sesión activa, no volvemos a mostrar el login,
     // directamente redireccionamos al perfil.
-    const cookieToken = req.cookies && req.cookies['tokenHYM'] ? req.cookies['tokenHYM']: undefined;
-    
+    const cookieToken = req.cookies && req.cookies['tokenHYM'] ? req.cookies['tokenHYM'] : undefined;
+
     if (cookieToken) {
         res.redirect('/profilejwt')
     } else {
@@ -107,8 +140,8 @@ router.get('/profilejwt', authToken, async (req, res) => {
     try {
         res.render('profile', { user: req.user });
     } catch (err) {
-        req.logger.error({status:'ERR', code:'500', message: err.message});
-        res.status(500).send({ status: "Error", payload: err.message});
+        req.logger.error({ status: 'ERR', code: '500', message: err.message });
+        res.status(500).send({ status: "Error", payload: err.message });
     }
 })
 
@@ -118,7 +151,7 @@ router.get("/mockingUsers", async (req, res) => {
         const users = userController.generateMockUsers(100);
         res.status(200).send({ status: "OK", data: users });
     } catch (err) {
-        req.logger.error({status:'ERR', code:'500', message: err.message});
+        req.logger.error({ status: 'ERR', code: '500', message: err.message });
         res.status(500).send({ status: "ERR", data: err.message });
     }
 });
@@ -132,8 +165,8 @@ router.get('/loggerTest', async (req, res) => {
     req.logger.http('Http');
     req.logger.debug('Debug');
 
-    res.send({status: "OK"});
-    
+    res.send({ status: "OK" });
+
 })
 
 

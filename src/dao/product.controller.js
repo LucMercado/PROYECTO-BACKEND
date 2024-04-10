@@ -11,7 +11,8 @@ class ProductDTO {
         this.status = product.status;
         this.stock = product.stock;
         this.category = product.category;
-        this.thumbnail = product.thubnail;
+        this.thumbnail = product.thumbnail;
+        this.owner = product.owner;
     }
 }
 
@@ -21,7 +22,7 @@ export default class ProductController {
 
     async addProduct(product) {
         const normalizedProduct = new ProductDTO(product);
-        return await productService.addProduct(normalizedProduct);
+        return await productService.addProductService(normalizedProduct);
     }
 
     async getProducts(page, limit) { 

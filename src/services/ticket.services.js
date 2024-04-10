@@ -16,7 +16,8 @@ export default class TicketService {
     async createTicketService(total, email) {
         try {
             const ticket = new TicketDTO(total, email);
-            return await ticketModel.create(ticket);
+            const newTicket = await ticketModel.create(ticket);
+            return newTicket;
         } catch (err) {
             return err.message;
         }

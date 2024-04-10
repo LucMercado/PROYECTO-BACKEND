@@ -21,12 +21,4 @@ const schema = new mongoose.Schema({
     total: { type: Number, required: true }
 })
 
-// schema.pre('find', function () {
-//     this.populate({ path: 'products.product', model: productModel });
-// })
-
-// schema.pre('findOne', function () {
-//     this.populate({ path: 'products.product', model: productModel });
-// })
-
 export default mongoose.model(collection, schema)

@@ -68,9 +68,14 @@ router.patch('/:uid', authToken, handlePolicies(['admin']), async (req, res) => 
     try {
         const userId = req.params.uid;
         const { role } = req.body;
-        //armar
-        req.logger.info({status:'OK', code:'200', message: "Rol actualizado"});
-        res.status(200).send({ status: 'OK', data: await controller.updateUser(userId, newContent) });
+        console.log(role, userId);
+        if (!role) {
+            req.logger.error({status:'ERR', code:'400', message: 'Faltan campos obligatorios' });
+            return res.status(400).send({ status: 'ERR', data: 'Faltan campos obligatorios' });
+        }
+        const result = await controller.updateRole(userId, role);
+        req.logger.info({status:'OK', code:'200', message: result });
+        res.status(200).send({ status: 'OK', data: result });
     } catch (err) {
         req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({ status: 'ERR', data: err.message });

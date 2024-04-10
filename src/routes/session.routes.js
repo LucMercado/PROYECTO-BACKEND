@@ -3,7 +3,7 @@ import passport from 'passport';
 import jwt from 'jsonwebtoken'
 
 import userModel from '../dao/models/user.model.js';
-import { createHash, isValidPassword, generateToken, passportCall, handlePolicies, enviarCorreoRestablecimiento, authToken } from '../utils.js';
+import { createHash, isValidPassword, generateToken, passportCall, handlePolicies, sendRestoreEmail, authToken } from '../utils.js';
 import initPassport from '../auth/passport.config.js';
 import errorsDictionary from '../services/errors.dictionary.js';
 import config from '../config.js'
@@ -122,8 +122,8 @@ router.post('/send-restore-email', async (req, res) => {
         if (userInDb !== null) {
             const token = generateToken({ email: userInDb.email }, '1h');
 
-            const data = enviarCorreoRestablecimiento(email, token);
-            req.logger.info(data);
+            const data = sendRestoreEmail(email, token);
+            req.logger.info('Email de restauración enviado');
             res.redirect('/restore-email-sent');
 
         } else {

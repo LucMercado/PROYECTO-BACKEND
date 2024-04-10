@@ -45,7 +45,6 @@ export default class CartService {
 
                 } else {
                     cartFound.products.push({ product: pid, quantity: quantity });
-                    const product = await productModel.findById(pid).lean();
                     cartFound.total += price * quantity;
                     await cartFound.save();
                 }
@@ -95,25 +94,40 @@ export default class CartService {
 
     async deleteOneProductToCartService(cid, pid) {
         try {
+            const cart = await cartModel.findById(cid).lean();
+
+            if (!cart) {
+                throw new Error("Carrito no encontrado");
+            }
+            
+            const quantity = cart.products.find((p) => p.product.toString() === pid).quantity;
+            const product = await productModel.findById(pid).lean();
+    
+            const subtotal = quantity * product.price;
+            const newTotal = cart.total - subtotal;
+    
             const process = await cartModel.findByIdAndUpdate(
                 cid,
-                { $pull: { products: { product: pid } } },
+                { 
+                    $pull: { products: { product: pid } },
+                    $set: { total: newTotal }
+                },
                 { new: true }
             );
-            return "Producto eliminado del carrito";
+    
+            return "Producto eliminado del carrito y total actualizado";
         } catch (err) {
             return err.message;
         }
     }
+    
 
     async processPurchaseService(cid, email) {
         try {
-            const data = await cartModel
-                .findById(cid)
-                .populate({ path: "products.product", model: productModel })
-                .lean();
-            const cartItems = data.products;
+            const cart = await cartModel.findById(cid)
+            const cartItems = cart.products;
             const outOfStock = [];
+            const processedProducts = [];
             let total = 0;
 
             for (const item of cartItems) {
@@ -124,6 +138,7 @@ export default class CartService {
                     continue;
                 }
 
+
                 processedProducts.push(item)
                 product.stock -= item.quantity;
                 await product.save()
@@ -132,11 +147,15 @@ export default class CartService {
 
             const ticket = await ticketManager.createTicketService(total, email);
 
+            cart.products = outOfStock;
+            cart.total = 0;
+            await cart.save();
+
             if (outOfStock.length > 0){
                 return { message: "Compra incompleta, productos con insuficiente stock", products: outOfStock, ticket }
             }
 
-            return { message: "Compra realizada correctamente", ticket }
+            return { message: "Compra realizada correctamente", ticket, products: processedProducts }
         } catch (err) {
             return err.message;
         }

@@ -1,0 +1,39 @@
+<h2 style="text-align: center;">CHECKOUT</h2>
+
+<ul class="list-group">
+    {{#each products}}
+    <li id="product-{{this.product._id}}" class="list-group-item">
+        <a href="products/{{this.product._id}}">
+            <h3>{{this.product.title}}</h3>
+            <p>Precio: {{this.product.price}}</p>
+            <p>Cantidad: {{this.quantity}}</p>
+        </a>
+    </li>
+    {{/each}}
+</ul>
+
+<h3>Total a pagar: {{total}}</h3>
+
+<div class="checkout-actions">
+    <a href="/cart" class="btn btn-primary">Volver al carrito</a>
+    <button type="button" class="btn btn-success" type="submit" onClick="processPurchase()">Confirmar compra</button>
+</div>
+
+<script>
+    function processPurchase() {
+        fetch('/api/carts/{{cartId}}/purchase', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Compra realizada con éxito");
+            window.location.href = '/products';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>

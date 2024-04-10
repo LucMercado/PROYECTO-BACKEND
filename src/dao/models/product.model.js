@@ -15,7 +15,7 @@ const schema = new mongoose.Schema({
     stock: { type: Number, required: true },
     category: { type: String, required: true },
     thumbnail: { type: String, required: false },
-    owner: { type: String, default:"admin" }
+    owner: { type: mongoose.Schema.Types.ObjectId, required: true}
 })
 
 schema.plugin(mongoosePaginate)

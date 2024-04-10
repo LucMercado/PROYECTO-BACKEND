@@ -8,6 +8,9 @@ import CustomError from './services/error.custom.class.js'
 
 import config from './config.js'
 import errorsDictionary from './services/errors.dictionary.js'
+import ProductManager from './dao/product.controller.js'
+
+const productManager = new ProductManager();
 
 // Este private key es para cifrar el token
 const PRIVATE_KEY = config.SECRET_KEY
@@ -62,6 +65,23 @@ export const handlePolicies = policies => {
     }
 }
 
+export const allowModifiedProduct = async (req, res, next) => {
+    if (!req.user) return res.status(401).send({ status: 'ERR', data: errorsDictionary.UNAUTHORIZED_ERROR })
+    if (req.user.role === 'admin') return next();
+    const product = await productManager.getProductById(req.params.pid); 
+    if (req.user.role === 'premium' && req.user._id === product.owner) return next();
+    return next(new CustomError(errorsDictionary.UNAUTHORIZED_ERROR));
+}
+
+export const checkProductOwner = async (req, res, next) => {
+    if (!req.user) return res.status(401).send({ status: 'ERR', data: errorsDictionary.UNAUTHORIZED_ERROR })
+    const product = await productManager.getProductById(req.params.pid);
+    const ownerId = product.owner.toString();
+    console.log(ownerId);
+    if (req.user._id !== ownerId) return next();
+    return next(new CustomError(errorsDictionary.PRODUCT_OF_OWNER));
+}
+
 export const mailerService = nodemailer.createTransport({
     service: 'gmail',
     port: 587,
@@ -72,16 +92,16 @@ export const mailerService = nodemailer.createTransport({
 });
 
 // Enviar correo electrónico con el enlace de restablecimiento
-export const enviarCorreoRestablecimiento = (correoUsuario, token) => {
-    const enlaceRestablecimiento = `http://localhost:8080/restore?token=${token}`; //cambiar dominio cuando levante servidor
+export const sendRestoreEmail = (email, token) => {
+    const restoreLink = `http://localhost:8080/restore?token=${token}`; //cambiar dominio cuando levante servidor
 
     const transporter = mailerService;
 
     const mailOptions = {
         from: config.GOOGLE_APP_EMAIL,
-        to: correoUsuario,
+        to: email,
         subject: 'Restablecimiento de contraseña',
-        text: `Hola, para restablecer tu contraseña, haz clic en el siguiente enlace: ${enlaceRestablecimiento}`
+        text: `Hola, para restablecer tu contraseña, haz clic en el siguiente enlace: ${restoreLink}`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

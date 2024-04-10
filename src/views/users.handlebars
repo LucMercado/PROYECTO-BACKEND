@@ -1,5 +1,8 @@
-<h1>HYM MATERIALES</h1>
-<h2>{{title}}</h2>
+<div style="text-align: center;">
+    <h2>{{title}}</h2>
+    <button style="margin-bottom: 15px;" type="button" class="btn btn-danger" onclick="deleteInactivityUsers()">Eliminar usuarios inactivos hace más de dos días</button>
+
+</div>
 
 <nav aria-label="Paginacion">
     <ul class="pagination">
@@ -13,16 +16,22 @@
 <ul class="list-group">
     {{#each data.docs}}
         <li class="list-group-item">
-            <p>{{this.first_name}}</p>
-            <p>{{this.last_name}}</p>
-            <p>{{this.email}}</p>
-            <div class="form-group">
-                <label for="role">Rol:</label>
-                <select class="form-control" id="role" name="role" data-user-id="{{this._id}}">
-                    <option value="user" {{#ifEquals this.role "user"}} selected {{/ifEquals}}>Usuario</option>
-                    <option value="admin" {{#ifEquals this.role "admin"}} selected {{/ifEquals}}>Administrador</option>
-                </select>
-            </div>
+            <p>Nombre: {{this.first_name}}</p>
+            <p>Apellido: {{this.last_name}}</p>
+            <p>Email: {{this.email}}</p>
+            <p>Rol: {{this.role}}</p>
+            {{#ifEquals this.role 'admin'}}
+                <button type="button" class="btn btn-dark" onclick="updateRole('{{this._id}}', 'user')">Cambiar a usuario</button>
+                <button type="button" class="btn btn-warning" onclick="updateRole('{{this._id}}', 'premium')">Cambiar a premium</button>
+            {{/ifEquals}}
+            {{#ifEquals this.role 'user'}}
+                <button type="button" class="btn btn-primary" onclick="updateRole('{{this._id}}', 'admin')">Cambiar a admin</button>
+                <button type="button" class="btn btn-warning" onclick="updateRole('{{this._id}}', 'premium')">Cambiar a premium</button>
+            {{/ifEquals}}
+            {{#ifEquals this.role 'premium'}}
+                <button type="button" class="btn btn-primary" onclick="updateRole('{{this._id}}', 'admin')">Cambiar a admin</button>
+                <button type="button" class="btn btn-dark" onclick="updateRole('{{this._id}}', 'user')">Cambiar a usuario</button>
+            {{/ifEquals}}
             <button type="button" class="btn btn-danger" onclick="deleteUser('{{this._id}}')">Eliminar</button>
         </li>
     {{/each}}
@@ -46,4 +55,40 @@
             });
         }
     }
+
+    function updateRole(userId, role) {
+        fetch('/api/users/' + userId, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ role })
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('No se pudo actualizar el rol del usuario');
+            }
+        });
+    }
+
+    function deleteInactivityUsers() {
+        if (confirm('¿Estás seguro de que deseas eliminar los usuarios inactivos hace más de dos días?')) {
+            fetch('/api/users', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('No se pudo eliminar los usuarios inactivos');
+                }
+            });
+        }
+    }
+
 </script>

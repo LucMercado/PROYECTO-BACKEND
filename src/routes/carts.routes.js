@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import CartManager from '../dao/cart.controller.js';
-import { passportCall, authToken, handlePolicies } from '../utils.js';
+import { passportCall, authToken, handlePolicies, checkProductOwner } from '../utils.js';
 import CustomError from "../services/error.custom.class.js";
 import errorsDictionary from "../services/errors.dictionary.js";
 
@@ -37,7 +37,7 @@ router.post('/', authToken, handlePolicies(['admin']), async (req, res) => {
     res.status(200).send("Carrito creado");
 })
 
-router.post('/:cid/product/:pid', authToken, async (req, res) => {
+router.post('/:cid/product/:pid', authToken, checkProductOwner, async (req, res) => {
     try {
         const cartId = req.params.cid;
         const productId = req.params.pid;
@@ -51,7 +51,7 @@ router.post('/:cid/product/:pid', authToken, async (req, res) => {
     }
 })
 
-router.patch('/:cid/product/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
+router.patch('/:cid/product/:pid', authToken, async (req, res) => {
     try {
         const cartId = req.params.cid;
         const productId = req.params.pid;
@@ -64,7 +64,7 @@ router.patch('/:cid/product/:pid', authToken, handlePolicies(['admin']), async (
     }
 })
 
-router.put('/:cid', authToken, handlePolicies(['admin']), async (req, res) => {
+router.put('/:cid', authToken, async (req, res) => {
     try{
         const cartId = req.params.cid;
         const updatedProducts = req.body;
@@ -76,12 +76,15 @@ router.put('/:cid', authToken, handlePolicies(['admin']), async (req, res) => {
     }
 })
 
-router.delete('/:cid/product/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
+router.delete('/:cid/product/:pid', authToken, async (req, res) => {
     try {
         const cartId = req.params.cid;
         const productId = req.params.pid;
 
-        res.status(200).send({status: "Succes", data: await cartManager.deleteOneProductToCart(cartId, productId)});
+        const result = await cartManager.deleteOneProductToCart(cartId, productId);
+
+        req.logger.info({status:'OK', code:'200', message: result});
+        res.status(200).send({status: "Succes", data: result});
     } catch (err) {
         req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});
@@ -106,7 +109,10 @@ router.post('/:cid/purchase', passportCall('jwtAuth', { session: false }), async
         const cartId = req.params.cid;
         const email = req.user.email;
 
-        res.status(200).send({status: "Succes", data: await cartManager.processPurchase(cartId, email)});
+        const result = await cartManager.processPurchase(cartId, email);
+
+        req.logger.info({status:'OK', code:'200', message: result.message});
+        res.status(200).send({status: "Succes", data: result});
     } catch (err) {
         req.logger.error({status:'ERR', code:'500', message: err.message});
         res.status(500).send({status: "Error", data: err.message});

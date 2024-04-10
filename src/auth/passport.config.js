@@ -55,7 +55,7 @@ const initPassport = () => {
             const userInDb = await userModel.findOne({ email: username });
 
             if (userInDb !== null && isValidPassword(userInDb, password)) {
-                const { _id, password, ...user } = userInDb._doc;
+                const { password, ...user } = userInDb._doc;
                 userInDb.lastConnection = new Date();
                 if (user) return done(null, user);
             }

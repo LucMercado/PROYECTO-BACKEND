@@ -3,7 +3,7 @@ import ProductManager from "../dao/product.controller.js";
 import { uploader } from '../uploader.js'
 import CustomError from "../services/error.custom.class.js";
 import errorsDictionary from "../services/errors.dictionary.js";
-import { authToken, handlePolicies } from "../utils.js";
+import { authToken, handlePolicies, allowModifiedProduct } from "../utils.js";
 
 
 const router = Router();
@@ -65,16 +65,10 @@ router.post('/', authToken, handlePolicies(['admin', 'premium']), uploader.singl
         code,
         status,
         category,
-        stock
+        stock,
+        owner: req.user._id
     };
-
     const result = await productManager.addProduct(newContent);
-
-    //Emito el nuevo producto creado a traves de socket.io para actualizar lista en tiempo real
-    if (req.app.get("socketio")) {
-        req.app.get("socketio").emit('newProduct', newContent);
-        console.log("Emitido");
-    }
 
     res.status(200).send({ data: result });
     } catch (err) {
@@ -83,7 +77,7 @@ router.post('/', authToken, handlePolicies(['admin', 'premium']), uploader.singl
     }
 });
 
-router.put('/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
+router.put('/:pid', authToken, handlePolicies(['admin', 'premium']), allowModifiedProduct, async (req, res) => {
     try {
     const newContent = req.body;
     const pid = Number.parseInt(req.params.pid);
@@ -97,17 +91,11 @@ router.put('/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
     }
 });
 
-router.delete('/:pid', authToken, handlePolicies(['admin']), async (req, res) => {
+router.delete('/:pid', authToken, handlePolicies(['admin', 'premium']), allowModifiedProduct, async (req, res) => {
     try {
     const productId = Number.parseInt(req.params.pid);
 
     await productManager.deleteProduct(productId);
-
-    //Emito el evento producto eliminado a traves de socket.io para actualizar lista en tiempo real
-    if (req.app.get("socketio")) {
-        req.app.get("socketio").emit('deleteProduct', productId);
-        console.log("Emitido")
-    }
 
     res.status(200).send("Producto eliminado");
     } catch (err) {

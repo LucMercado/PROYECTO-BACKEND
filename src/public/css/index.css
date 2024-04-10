@@ -1,0 +1,4 @@
+a {
+    text-decoration: none; /* Elimina el subrayado por defecto */
+    color: inherit; /* Utiliza el color heredado para el texto */
+}

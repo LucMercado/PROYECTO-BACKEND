@@ -1,16 +1,15 @@
-<h2>PRODUCTOS</h2>
+<h2 style="text-align: center;">PRODUCTOS</h2>
 <input type="hidden" id="cart-id" name="cartId" value={{user.cart}}>
 <input type="hidden" id="page" name="page" value={{page}}>
 
 <div id="pagination-container"></div>
 
 <div>
-    <ul id="product-container">
-    </ul>
+    <div id="product-container" class="row">
+    </div>
 </div>
 
 <script>
-    const cartId = document.getElementById('cart-id').value;
     const productContainer = document.getElementById('product-container');
     const page = document.getElementById('page').value;
 
@@ -75,38 +74,47 @@
             }
 
             nav.appendChild(ul);
-            
+
             const container = document.getElementById('pagination-container');
             container.appendChild(nav);
 
+            const cartId = document.getElementById('cart-id').value;
             const products = data.payload.docs;
             products.forEach(product => {
-                const productElement = document.createElement('li');
+                const productElement = document.createElement('div');
+                productElement.classList.add('col-md-4', 'mb-4'); 
                 if (product.stock > 0) {
                     productElement.innerHTML = `
-                    <hr>
+            <div class="card">
+                <div class="card-body" style="text-align:center;">
                     <a href="products/${product._id}">
-                    <h3>${product.title}</h3>
-                    <p>Precio: ${product.price}</p>
-                    <p>Descripción: ${product.description}</p>
-                    <p>Categoría: ${product.category}</p>
-                    <p>Stock: ${product.stock}</p>
-                    <form action="/api/carts/${cartId}/product/${product._id}" method="POST">
-                        <button type="submit" class="btn btn-secondary">Agregar al carrito</button>
-                    </form>
+                        <h5 class="card-title">${product.title}</h5>
+                        <p class="card-text">Precio: ${product.price}</p>
+                        <p class="card-text">Descripción: ${product.description}</p>
+                        <p class="card-text">Categoría: ${product.category}</p>
+                        <p class="card-text">Stock: ${product.stock}</p>
+                        <form action="/api/carts/${cartId}/product/${product._id}" method="POST">
+                            <button type="submit" class="btn btn-secondary">Agregar al carrito</button>
+                        </form>
                     </a>
-                `;
+                </div>
+            </div>
+        `;
                 } else {
                     productElement.innerHTML = `
-                        <hr>
-                        <a href="products/${product._id}">
-                        <h3>${product.title}</h3>
-                        <p>Precio: ${product.price}</p>
-                        <p>Descripción: ${product.description}</p>
-                        <p>Categoría: ${product.category}</p>
-                        <p>Stock: Sin stock</p>
-                        </a>
-                    `;
+            <div class="card">
+                <div class="card-body" style="text-align:center;">
+                    <a href="products/${product._id}">
+                        <h5 class="card-title">${product.title}</h5>
+                        <p class="card-text">Precio: ${product.price}</p>
+                        <p class="card-text">Descripción: ${product.description}</p>
+                        <p class="card-text">Categoría: ${product.category}</p>
+                        <p class="card-text">Stock: ${product.stock}</p>
+                        <button type="button" class="btn btn-secondary" disabled>Producto agotado</button>
+                    </a>
+                </div>
+            </div>
+        `;
                 }
                 productContainer.appendChild(productElement);
             })

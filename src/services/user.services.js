@@ -34,6 +34,15 @@ export class UserService {
         }
     }
 
+    async updateRoleService(userId, role) {
+        try {
+            await userModel.updateOne({ _id: userId }, { role: role });
+            return "Rol actualizado";
+        } catch (err) {
+            return err.message;
+        }
+    }
+
     async addUserService(user) {
         try {
             await userModel.create(user);

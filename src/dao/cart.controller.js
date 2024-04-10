@@ -51,8 +51,8 @@ export default class CartManager {
         return await cartService.deleteOneProductToCartService(cid, pid);
     }
 
-    async processPurchase(cid, products) {
-        return await cartService.processPurchaseService(cid);
+    async processPurchase(cid, email) {
+        return await cartService.processPurchaseService(cid, email);
     }
 
 }

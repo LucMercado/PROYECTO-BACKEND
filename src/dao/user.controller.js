@@ -18,6 +18,10 @@ export class UserController {
         return await userService.updateUserService(user);
     }
 
+    async updateRole(userId, role) {
+        return await userService.updateRoleService(userId, role);
+    }
+
     async getUsersPaginated(page, limit) {
         return await userService.getUsersPaginatedService(page, limit);
     }
