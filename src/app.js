@@ -117,7 +117,7 @@ try {
 
     // CONFIGURACIÓN DE CHAT
     // Asignamos a httpServer la instancia de Express para poder luego pasarlo al server de socket.io    
-    const httpServer = app.listen(PORT, () => {
+    const httpServer = app.listen(PORT, "0.0.0.0", () => {
         console.log(
             `Servidor EXPRESS activo en puerto ${PORT}, conectado a base de datos`
         );
