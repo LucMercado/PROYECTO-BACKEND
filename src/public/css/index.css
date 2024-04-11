@@ -2,3 +2,22 @@ a {
     text-decoration: none; /* Elimina el subrayado por defecto */
     color: inherit; /* Utiliza el color heredado para el texto */
 }
+
+.profile-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+}
+.profile-card h2 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #333;
+}
+.profile-data {
+    margin-bottom: 20px;
+}
+.profile-data label {
+    font-weight: bold;
+}

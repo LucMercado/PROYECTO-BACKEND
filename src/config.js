@@ -10,7 +10,7 @@ commandLineOptions.parse();
 dotenv.config();
 
 const config = {
-    PORT: commandLineOptions.opts().port || 8080,
+    PORT: process.env.PORT || 8080,
     MONGOOSE_URL: process.env.MONGOOSE_URL_REMOTE,
     SECRET_KEY: process.env.SECRET_KEY,
     UPLOAD_DIR: 'public/img',
