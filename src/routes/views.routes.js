@@ -12,10 +12,22 @@ const productManager = new ProductManager();
 const cartManager = new CartManager();
 const userController = new UserController();
 
+// Vista de la página principal
+
+router.get('/', async (req, res) => {
+    try {
+        res.redirect('/login');
+    } catch (err) {
+        req.logger.error({ status: 'ERR', code: '500', message: err.message });
+        res.status(500).send({ status: "Error", payload: err.message });
+    }
+})
 
 // Vista de la página principal con todos los productos
 router.get('/products', authToken, async (req, res) => {
     try {
+        const cookieToken = req.cookies && req.cookies['tokenHYM'] ? req.cookies['tokenHYM'] : undefined;
+        if (!cookieToken) return res.redirect('/login');
         const page = req.query.page || 1;
         res.render('home', { user: req.user, page });
     } catch (err) {

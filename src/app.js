@@ -34,6 +34,17 @@ try {
     await MongoSingleton.getInstance();
     const app = express();
 
+    // Inicialización del servidor
+    // Asignamos a httpServer la instancia de Express para poder luego pasarlo al server de socket.io  
+    const httpServer = app.listen(PORT, "0.0.0.0", () => {
+        console.log(
+            `Servidor EXPRESS activo en puerto ${PORT}, conectado a base de datos`
+        );
+        process.on("uncaughtException", (exception) => {
+            console.error(exception.name);
+            console.error(exception.message);
+        });
+    });
 
     // Configuración de Swagger
     const swaggerOptions = {
@@ -115,17 +126,7 @@ try {
     // SWAGGER
     app.use("/api/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
-    // CONFIGURACIÓN DE CHAT
-    // Asignamos a httpServer la instancia de Express para poder luego pasarlo al server de socket.io    
-    const httpServer = app.listen(PORT, "0.0.0.0", () => {
-        console.log(
-            `Servidor EXPRESS activo en puerto ${PORT}, conectado a base de datos`
-        );
-        process.on("uncaughtException", (exception) => {
-            console.error(exception.name);
-            console.error(exception.message);
-        });
-    });
+    // CONFIGURACIÓN DE CHAT  
     //Creo servidor websockets con socket.io
     const io = new Server(httpServer);
     let messages = [];

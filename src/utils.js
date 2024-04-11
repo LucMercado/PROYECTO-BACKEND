@@ -93,7 +93,7 @@ export const mailerService = nodemailer.createTransport({
 
 // Enviar correo electrónico con el enlace de restablecimiento
 export const sendRestoreEmail = (email, token) => {
-    const restoreLink = `http://localhost:8080/restore?token=${token}`; //cambiar dominio cuando levante servidor
+    const restoreLink = `http://hymmateriales.up.railway.app/restore?token=${token}`;
 
     const transporter = mailerService;
 
