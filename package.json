@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/app --mode=devel --port=8080",
-    "start": "node src/app --mode=prod --port=8080"
+    "start": "node src/app --mode=prod --port=8080 --omit=dev"
   },
   "keywords": [],
   "author": "",
