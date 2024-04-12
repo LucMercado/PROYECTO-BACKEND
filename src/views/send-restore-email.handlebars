@@ -1,17 +1,12 @@
-<style>
-    .restore-container {
-        max-width: 360px;
-        margin: auto;
-        margin-top: 64px;
-    }
-</style>
-
-<div class="restore-container">
-    <h2>Restaurar contraseña</h2>
-
+<div class="profile-card" style="text-align: center;">
+    <h2>Restaurar contraseña de email:</h2>
+    
     <form action="/api/sessions/send-restore-email" method="post" style="margin-top: 32px;">
+        <div class="row justify-content-center">
+        <div class="col-md-6">
 
-        <div class="input-group" style="width: 100%; margin-bottom: 8px;">
+        
+        <div class="input-group" style="margin-bottom: 8px;">
             <span class="input-group-text" id="group1"><i class="fa-solid fa-user"></i></span>
             <input type="email" name="email" class="form-control" placeholder="Email" required="required" autocomplete="email" autofocus="autofocus">
         </div>
@@ -22,12 +17,13 @@
         </div>
         {{/if}}
         
-        <button type="submit" class="btn btn-success">Restaurar</button>
-        
+        <button type="submit" class="btn btn-success">Enviar email de restauración</button>
+        </div>
+        </div>
     </form>
 
     <div style="margin-top: 15px;" >
-        <a href="/login">Volver a login</a>
+        <a href="/login" class="btn btn-dark">Volver a login</a>
     </div>
 
 </div>

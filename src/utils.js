@@ -100,8 +100,35 @@ export const sendRestoreEmail = (email, token) => {
     const mailOptions = {
         from: config.GOOGLE_APP_EMAIL,
         to: email,
-        subject: 'Restablecimiento de contraseña',
+        subject: 'Restablecimiento de contraseña - HYM MATERIALES',
         text: `Hola, para restablecer tu contraseña, haz clic en el siguiente enlace: ${restoreLink}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            throw new CustomError(error);
+        } else {
+            return 'Correo electrónico enviado:', info.response;
+        }
+    });
+}
+
+// Enviar correo electrónico compra realizada
+
+export const sendPurchaseEmail = (email, products) => {
+    const transporter = mailerService;
+
+    const data = products.map((product) => {
+        return `${product.product} x ${product.quantity} - $${product.price}`;
+    });
+
+    const total = products.reduce((acc, product) => acc + product.price * product.quantity, 0);
+
+    const mailOptions = {
+        from: config.GOOGLE_APP_EMAIL,
+        to: email,
+        subject: 'Compra realizada - HYM MATERIALES',
+        text: `Hola, has realizado una compra de los siguientes productos: \n${data.join('\n')} \n\nTotal: $${total} \n\nGracias por tu compra!`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

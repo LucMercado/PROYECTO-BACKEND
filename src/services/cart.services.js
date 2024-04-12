@@ -1,5 +1,6 @@
 import cartModel from "../dao/models/cart.model.js";
 import productModel from "../dao/models/product.model.js";
+import { sendPurchaseEmail } from "../utils.js";
 
 import TicketService from "./ticket.services.js";
 
@@ -134,12 +135,12 @@ export default class CartService {
                 const product = await productModel.findById(item.product._id);
 
                 if (!product || product.stock < item.quantity) {
-                    outOfStock.push(item.product._id);
+                    outOfStock.push(item);
                     continue;
                 }
 
 
-                processedProducts.push(item)
+                processedProducts.push({ product: product.title, quantity: item.quantity, price: product.price });
                 product.stock -= item.quantity;
                 await product.save()
                 total += product.price * item.quantity;
@@ -152,8 +153,10 @@ export default class CartService {
             await cart.save();
 
             if (outOfStock.length > 0){
-                return { message: "Compra incompleta, productos con insuficiente stock", products: outOfStock, ticket }
+                return { message: "Compra realizada incompleta, productos con insuficiente stock", products: outOfStock, ticket }
             }
+
+            sendPurchaseEmail(email, processedProducts);
 
             return { message: "Compra realizada correctamente", ticket, products: processedProducts }
         } catch (err) {
