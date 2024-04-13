@@ -1,4 +1,6 @@
 import productModel from '../dao/models/product.model.js';
+import userModel from '../dao/models/user.model.js';
+import { sendDeleteProductEmail } from '../email-utils.js';
 
 export default class ProductService {
     constructor() {
@@ -50,6 +52,11 @@ export default class ProductService {
 
     async deleteProductService(id) {
         try {
+            const product = await productModel.findById(id)
+            const owner = await userModel.findById(product.owner)
+            if (owner.role === 'premium') {
+                sendDeleteProductEmail(owner.email, product.title)
+            }
             const procedure = await productModel.findByIdAndDelete(id)
             return procedure
         } catch (err) {

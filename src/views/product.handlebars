@@ -1,14 +1,23 @@
-<div>
-    <h1>HYM MATERIALES</h1>
-
-    <h2>PRODUCTO</h2>
-
-    <h3>{{ product.title }}</h3>
-    <p>Precio: {{ product.price }}</p>
-    <p>Descripción: {{ product.description }}</p>
-    <p>Categoría: {{ product.category }}</p>
-    <form action=/api/carts/{{user.cart}}/product/{{_id}} method="POST">
-
-        <button type="submit">Agregar al carrito</button>
-    </form>
+<div class="card profile-card">
+    <div class="card-body">
+        <h2 class="card-title">{{ product.title }}</h2>
+        <div class="row">
+            <div class="col-md-8">
+                <p class="card-text">Precio: {{ product.price }}</p>
+                <p class="card-text">Descripción: {{ product.description }}</p>
+                <p class="card-text">Categoría: {{ product.category }}</p>
+                <p class="card-text">Stock: {{ product.stock }}</p>
+                {{#if product.stock}}
+                    <form action="/api/carts/{{user.cart}}/product/{{product._id}}" method="POST">
+                        <button type="submit" class="btn btn-primary">Agregar al carrito</button>
+                    </form>
+                {{else}}
+                    <p class="text-danger">Producto sin stock</p>
+                {{/if}}
+            </div>
+            <div class="col-md-4">
+                <img src="../static/img/{{product.thumbnail}}" class="card-img-top img-fluid" alt="imagen {{product.title}}">
+            </div>
+        </div>
+    </div>
 </div>

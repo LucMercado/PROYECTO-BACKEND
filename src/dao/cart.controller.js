@@ -1,7 +1,7 @@
 import CartService from "../services/cart.services.js";
 import CustomError from "../services/error.custom.class.js";
 import errorsDictionary from "../services/errors.dictionary.js";
-import ProductController from "./product.controller.js";
+import { ProductController } from "./product.controller.js";
 
 const cartService = new CartService;
 const productManager = new ProductController;

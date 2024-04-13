@@ -1,6 +1,6 @@
 import cartModel from "../dao/models/cart.model.js";
 import productModel from "../dao/models/product.model.js";
-import { sendPurchaseEmail } from "../utils.js";
+import { sendPurchaseEmail } from "../email-utils.js";
 
 import TicketService from "./ticket.services.js";
 

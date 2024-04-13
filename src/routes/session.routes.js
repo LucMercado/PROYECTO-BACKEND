@@ -3,7 +3,8 @@ import passport from 'passport';
 import jwt from 'jsonwebtoken'
 
 import userModel from '../dao/models/user.model.js';
-import { createHash, isValidPassword, generateToken, passportCall, handlePolicies, sendRestoreEmail, authToken } from '../utils.js';
+import { createHash, isValidPassword, generateToken, passportCall, handlePolicies, authToken } from '../utils.js';
+import { sendRestoreEmail } from '../email-utils.js';
 import initPassport from '../auth/passport.config.js';
 import errorsDictionary from '../services/errors.dictionary.js';
 import config from '../config.js'

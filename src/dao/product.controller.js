@@ -16,7 +16,7 @@ class ProductDTO {
     }
 }
 
-export default class ProductController {
+export class ProductController {
     constructor() {
     }
 
@@ -38,6 +38,6 @@ export default class ProductController {
     }
 
     async deleteProduct(id) {
-        return await productService.updateProductService(id);
+        return await productService.deleteProductService(id);
     }
 }

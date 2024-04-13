@@ -2,13 +2,13 @@ import { Router } from "express";
 import handlebars from 'handlebars';
 
 import { authToken, handlePolicies } from '../utils.js'
-import ProductManager from '../dao/product.controller.js';
+import { ProductController } from '../dao/product.controller.js';
 import CartManager from '../dao/cart.controller.js';
 import { UserController } from '../dao/user.controller.js';
 
 const router = Router();
 
-const productManager = new ProductManager();
+const productManager = new ProductController();
 const cartManager = new CartManager();
 const userController = new UserController();
 

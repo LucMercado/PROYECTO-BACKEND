@@ -22,31 +22,11 @@ import jwt from "passport-jwt";
 import userModel from "../dao/models/user.model.js";
 import CartManager from "../dao/cart.controller.js";
 import { createHash, isValidPassword } from "../utils.js";
+import { sendWelcomeEmail } from "../email-utils.js";
 
 import config from "../config.js";
 
 const cartManager = new CartManager();
-
-class UserDTO {
-    constructor(user){
-        this.email = user.email;
-        this.password = createHash(user.password);
-        this.first_name = user.first_name;
-        this.last_name = user.last_name;
-        this.age = user.age;
-    }
-    static async createUser(user) {
-        const cart = await cartManager.addCart();
-        return new UserDTO({
-            email: user.email,
-            password: user.password,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            age: user.age,
-            cart: cart
-        });
-    }
-}
 
 const initPassport = () => {
     // Función utilizada por la estrategia loginAuth
@@ -95,6 +75,8 @@ const initPassport = () => {
             console.log(newUser)
 
             const process = await userModel.create(newUser);
+
+            sendWelcomeEmail(newUser.email, newUser.first_name);
 
             return done(null, process);
         } catch (err) {

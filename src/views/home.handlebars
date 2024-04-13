@@ -82,38 +82,47 @@
             const products = data.payload.docs;
             products.forEach(product => {
                 const productElement = document.createElement('div');
-                productElement.classList.add('col-md-4', 'mb-4'); 
+                productElement.classList.add('col-md-4', 'mb-4');
                 if (product.stock > 0) {
                     productElement.innerHTML = `
-            <div class="card">
-                <div class="card-body" style="text-align:center;">
-                    <a href="products/${product._id}">
-                        <h5 class="card-title">${product.title}</h5>
-                        <p class="card-text">Precio: ${product.price}</p>
-                        <p class="card-text">Descripción: ${product.description}</p>
-                        <p class="card-text">Categoría: ${product.category}</p>
-                        <p class="card-text">Stock: ${product.stock}</p>
-                        <form action="/api/carts/${cartId}/product/${product._id}" method="POST">
-                            <button type="submit" class="btn btn-secondary">Agregar al carrito</button>
-                        </form>
-                    </a>
-                </div>
-            </div>
+                    <div class="card" style="height: 450px;">
+                        <div class="d-flex flex-column justify-content-between h-100" style="padding:2px">
+                            <!-- Contenedor para la imagen -->
+                                <img src="../static/img/${product.thumbnail}" class="card-img" alt="imagen ${product.title}" style="width: auto; height: 60%; object-fit: cover; border: 1px solid #dee2e6;">
+                            <!-- Contenedor para el cuerpo de la tarjeta -->
+                            <div class="card-body" style="text-align: center;">
+                                <a href="products/${product._id}">
+                                    <h5 class="card-title">${product.title}</h5>
+                                    <p class="card-text mb-1">Precio: ${product.price}</p>
+                                    <p class="card-text mb-1">Categoría: ${product.category}</p>
+                                    <p class="card-text mb-1">Stock: ${product.stock}</p>
+                                    <form action="/api/carts/${cartId}/product/${product._id}" method="POST">
+                                        <button type="submit" class="btn btn-secondary">Agregar al carrito</button>
+                                    </form>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
         `;
                 } else {
                     productElement.innerHTML = `
-            <div class="card">
-                <div class="card-body" style="text-align:center;">
-                    <a href="products/${product._id}">
-                        <h5 class="card-title">${product.title}</h5>
-                        <p class="card-text">Precio: ${product.price}</p>
-                        <p class="card-text">Descripción: ${product.description}</p>
-                        <p class="card-text">Categoría: ${product.category}</p>
-                        <p class="card-text">Stock: ${product.stock}</p>
-                        <button type="button" class="btn btn-secondary" disabled>Producto agotado</button>
-                    </a>
-                </div>
-            </div>
+                    <div class="card" style="height: 450px;">
+                        <div class="d-flex flex-column justify-content-between h-100" style="padding:2px">
+                            <!-- Contenedor para la imagen -->
+                                <img src="../static/img/${product.thumbnail}" class="card-img" alt="imagen ${product.title}" style="width: auto; height: 60%; object-fit: cover; border: 1px solid #dee2e6;">
+                            <!-- Contenedor para el cuerpo de la tarjeta -->
+                            <div class="card-body" style="text-align: center;">
+                                <a href="products/${product._id}">
+                                    <h5 class="card-title">${product.title}</h5>
+                                    <p class="card-text mb-1">Precio: ${product.price}</p>
+                                    <p class="card-text mb-1">Categoría: ${product.category}</p>
+                                    <p class="card-text mb-1">Stock: ${product.stock}</p>
+                                    <button type="button" class="btn btn-secondary" disabled>Producto agotado</button>
+
+                                </a>
+                            </div>
+                        </div>
+                    </div>
         `;
                 }
                 productContainer.appendChild(productElement);
